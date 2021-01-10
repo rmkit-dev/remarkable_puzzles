@@ -1,0 +1,64 @@
+#### Simon Tatham's Portable Puzzle Collection
+include defs.mk
+
+GAME_CFLAGS := -ansi -Ivendor/puzzles/ -Ivendor/puzzles/icons -DCOMBINED \
+	$(BUILD_FLAGS)
+
+# Basic defs from 'Recipe'
+GAME_COMMON = midend drawing misc malloc random version printing
+# EXTRA sources gathered from '*.R' files:
+# ag 'EXTRA = ' *.R | ag -o ' = .*' | cut -c 4- | xargs printf '%s\n' | sort | uniq
+GAME_EXTRA = combi divvy dsf findloop grid latin laydomino loopgen matching penrose sort tree234
+
+# All the actual games (from 'vendor/puzzles/Makefile.am'). Uncomment when a
+# game is ready to be included
+GAMES =
+# GAMES += blackbox
+# GAMES += bridges
+# GAMES += cube
+# GAMES += dominosa
+# GAMES += fifteen
+# GAMES += filling
+# GAMES += flip
+# GAMES += flood
+# GAMES += galaxies
+# GAMES += guess
+# GAMES += inertia
+# GAMES += keen
+GAMES += lightup
+# GAMES += loopy
+# GAMES += magnets
+# GAMES += map
+# GAMES += mines
+# GAMES += net
+# GAMES += netslide
+# GAMES += palisade
+# GAMES += pattern
+# GAMES += pearl
+# GAMES += pegs
+# GAMES += range
+# GAMES += rect
+# GAMES += samegame
+# GAMES += signpost
+# GAMES += singles
+# GAMES += sixteen
+# GAMES += slant
+# GAMES += solo
+# GAMES += tents
+# GAMES += towers
+# GAMES += tracks
+# GAMES += twiddle
+# GAMES += undead
+# GAMES += unequal
+GAMES += unruly
+# GAMES += untangle
+
+GAME_FILES = $(GAMES) $(GAME_COMMON) $(GAME_EXTRA)
+GAME_SRCS = $(GAME_FILES:%=%.c)
+GAME_OBJS = $(addprefix $(BUILD_DIR)/vendor/puzzles/, $(GAME_SRCS:.c=.o))
+
+$(GAME_OBJS): $(BUILD_DIR)/%.o : %.c
+	mkdir -p $(dir $@)
+	$(CC) $(GAME_CFLAGS) -c -o $@ $^
+
+games: $(GAME_OBJS)

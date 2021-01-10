@@ -1,0 +1,6 @@
+[submodule "vendor/puzzles"]
+	path = vendor/puzzles
+	url = git://git.tartarus.org/simon/puzzles.git
+[submodule "vendor/rmkit"]
+	path = vendor/rmkit
+	url = git@github.com:rmkit-dev/rmkit.git
