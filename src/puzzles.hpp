@@ -1,5 +1,5 @@
-#ifndef PUZZLES_HPP
-#define PUZZLES_HPP
+#ifndef RMP_PUZZLES_HPP
+#define RMP_PUZZLES_HPP
 
 // A C++ wrapper around the puzzle library.
 
@@ -327,4 +327,4 @@ struct drawing_api frontend::cpp_drawing_api = {
     cpp_text_fallback,
 };
 
-#endif // PUZZLES_HPP
+#endif // RMP_PUZZLES_HPP

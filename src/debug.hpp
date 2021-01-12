@@ -1,5 +1,5 @@
-#ifndef DEBUG_HPP
-#define DEBUG_HPP
+#ifndef RMP_DEBUG_HPP
+#define RMP_DEBUG_HPP
 
 #ifdef NDEBUG
 #define debugf(...)
@@ -15,4 +15,4 @@ inline void debugf(const char * fmt, ...)
 }
 #endif
 
-#endif // DEBUG_HPP
+#endif // RMP_DEBUG_HPP
