@@ -375,31 +375,12 @@ public:
 
 /// RMKIT AGAIN
 
-class NewGameButton : public ui::Button {
-public:
-    Frontend * fe;
-    NewGameButton(int x, int y, int w, int h, Frontend * fe)
-        : ui::Button(x, y, w, h, "New Game"),
-        fe(fe)
-    {}
-    void on_mouse_click(input::SynMotionEvent &ev)
-    {
-        // TODO: DRY this up
-        midend_new_game(fe->me);
-        int x = framebuffer::get()->width;
-        int y = framebuffer::get()->height;
-        midend_size(fe->me, &x, &y, /* user_size = */ true);
-        midend_redraw(fe->me);
-    }
-};
-
 // TODO: use the full game list
 extern const game lightup;
 
 class App {
 public:
     Canvas * canvas;
-    NewGameButton * new_game;
     Frontend * fe;
     int timer_start = 0;
 
@@ -417,7 +398,15 @@ public:
 
         canvas = new Canvas(0, 0, w, h);
         fe = new Frontend(canvas);
-        new_game = new NewGameButton(200, 1600, 400, 50, fe);
+        auto new_game = new ui::Button(200, 1600, 400, 50, "New Game");
+        new_game->mouse.click += [=](input::SynMotionEvent &ev) {
+          midend_new_game(fe->me);
+          int x = framebuffer::get()->width;
+          int y = framebuffer::get()->height;
+          midend_size(fe->me, &x, &y, /* user_size = */ true);
+          midend_redraw(fe->me);
+
+        };
         scene->add(canvas);
         scene->add(new_game);
     }
