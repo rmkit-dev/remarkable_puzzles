@@ -15,10 +15,13 @@
 
 #include <sys/time.h>
 
-float timer_now() {
+const int TIMER_INTERVAL_MS = 100;
+const double TIMER_INTERVAL_S = (double)TIMER_INTERVAL_MS / 1000;
+
+double timer_now() {
     struct timeval now;
     gettimeofday(&now, NULL);
-    return now.tv_sec + (now.tv_usec * 0.000001F);
+    return now.tv_sec + (now.tv_usec * 0.000001);
 }
 
 
@@ -30,7 +33,7 @@ public:
     ui::Text * status;
     float * colors;
     int ncolors;
-    float timer_prev = 0.0;
+    double timer_prev = 0.0;
     bool timer_active = false;
     Frontend(Canvas * canvas, ui::Text * status)
         : frontend(), canvas(canvas), status(status)
@@ -46,9 +49,11 @@ public:
 
     void trigger_timer()
     {
-        float now = timer_now();
-        midend_timer(me, now - timer_prev);
-        timer_prev = now;
+        double now = timer_now();
+        if ((now - timer_prev) > TIMER_INTERVAL_S) {
+            midend_timer(me, (float)(now - timer_prev));
+            timer_prev = now;
+        }
     }
 
     remarkable_color get_color(int idx)
@@ -434,20 +439,21 @@ public:
         start_game();
 
         while (1) {
-            ui::MainLoop::main();
-            ui::MainLoop::redraw();
-            // TODO: this belongs somewhere else
-            if (midend_status(fe->me) == 0) {
-                if (fe->timer_active) {
-                    fe->trigger_timer();
-                    continue;
-                }
-            } else if (midend_status(fe->me) > 0) {
+            // Check timer
+            if (fe->timer_active) {
+                fe->trigger_timer();
+            }
+            // Check win/lose
+            int status = midend_status(fe->me);
+            if (status > 0) {
                 fe->status_bar("You win!");
-            } else {
+            } else if (status < 0) {
                 fe->status_bar("You lose");
             }
-            ui::MainLoop::read_input();
+            // Process events and redraw
+            ui::MainLoop::main();
+            ui::MainLoop::redraw();
+            ui::MainLoop::read_input(fe->timer_active ? TIMER_INTERVAL_MS : 0);
         }
     }
 };
