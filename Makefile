@@ -46,8 +46,12 @@ CXXFLAGS += -fdata-sections -ffunction-sections -Wl,--gc-sections
 MAIN_OBJ = $(BUILD_DIR)/main.o
 MAIN_SRC = $(MAIN_OBJ:.o=.cpp)
 OBJS = $(MAIN_OBJ)
-$(MAIN_OBJ): $(BUILD_DIR)/rmkit.h $(SRCS)
-	cat $(SRCS) > $(MAIN_SRC)
+
+$(MAIN_SRC): $(SRCS)
+	rm $(MAIN_SRC)
+	for f in $(SRCS); do echo "#include \"$$f\"" >> $(MAIN_SRC); done
+
+$(MAIN_OBJ): $(BUILD_DIR)/rmkit.h $(MAIN_SRCS)
 	$(CXX) $(CXXFLAGS) -c -o $@ $(MAIN_SRC)
 
 $(BUILD_DIR)/$(TARGET): $(GAME_OBJS) $(OBJS)
