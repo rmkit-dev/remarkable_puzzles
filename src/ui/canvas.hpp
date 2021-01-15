@@ -1,7 +1,6 @@
 #ifndef RMP_UI_CANVAS_HPP
 #define RMP_UI_CANVAS_HPP
 
-#include <string>
 #include <rmkit.h>
 
 class Layer {

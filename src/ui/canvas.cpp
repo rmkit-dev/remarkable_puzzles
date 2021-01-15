@@ -1,9 +1,6 @@
 #include "debug.hpp"
 #include "ui/canvas.hpp"
 
-// TODO: framebuffer::FB destructor should be virtual
-#pragma GCC diagnostic ignored "-Wdelete-non-virtual-dtor"
-
 // TODO: figure out layer alpha
 
 // Copy data from one framebuffer to another
