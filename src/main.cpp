@@ -1,16 +1,9 @@
-#include <string> // required by rmkit, but not included in rmkit.h
-
-// rmkit includes a lot of warnings, and I'd like to compile with -Wall
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wreorder"
-#pragma GCC diagnostic ignored "-Wsign-compare"
-#pragma GCC diagnostic ignored "-Wsizeof-pointer-memaccess"
-#pragma GCC diagnostic ignored "-Wswitch"
-#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
-#pragma GCC diagnostic ignored "-Wunused-function"
-#pragma GCC diagnostic ignored "-Wunused-variable"
-#include "rmkit.h"
-#pragma GCC diagnostic pop
+#define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_RESIZE_IMPLEMENTATION
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#define STB_TRUETYPE_IMPLEMENTATION
+#include <string>
+#include <rmkit.h>
 
 #include <cstdio>
 #include <tuple>

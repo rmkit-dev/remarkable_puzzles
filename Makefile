@@ -16,10 +16,6 @@ debug: default
 
 #### rmkit
 RMKIT_FLAGS = -D"REMARKABLE=1" \
-	-DSTB_IMAGE_IMPLEMENTATION \
-	-DSTB_IMAGE_RESIZE_IMPLEMENTATION \
-	-DSTB_IMAGE_WRITE_IMPLEMENTATION \
-	-DSTB_TRUETYPE_IMPLEMENTATION \
 	-pthread -lpthread
 
 $(BUILD_DIR)/rmkit.h:
@@ -40,7 +36,8 @@ SRCS   = $(wildcard src/*.cpp)
 OBJS   = $(addprefix $(BUILD_DIR)/, $(SRCS:.cpp=.o))
 
 INCLUDES  = -I./ -Isrc/
-INCLUDES += -I$(BUILD_DIR)/ # for rmkit
+# rmkit produces a lot of warnings; making it a "system" header disables those
+INCLUDES += -isystem $(BUILD_DIR)/
 
 CXXFLAGS  = -Wall $(INCLUDES) $(RMKIT_FLAGS) $(BUILD_FLAGS)
 CXXFLAGS += -fdata-sections -ffunction-sections -Wl,--gc-sections
