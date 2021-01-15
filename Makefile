@@ -32,7 +32,7 @@ include Makefile.games
 
 #### Remarkable app
 TARGET = puzzles
-SRCS   = $(wildcard src/*.cpp)
+SRCS   = $(shell find src/ -type f -name '*.cpp')
 OBJS   = $(addprefix $(BUILD_DIR)/, $(SRCS:.cpp=.o))
 
 INCLUDES  = -I./ -Isrc/
@@ -42,21 +42,25 @@ INCLUDES += -isystem $(BUILD_DIR)/
 CXXFLAGS  = -Wall $(INCLUDES) $(RMKIT_FLAGS) $(BUILD_FLAGS)
 CXXFLAGS += -fdata-sections -ffunction-sections -Wl,--gc-sections
 
-# auto-generate deps
-CXXFLAGS += -MMD -MP
-DEPS=$(OBJS:.o=.d)
--include $(DEPS)
+# rmkit has to be built as a monolith, so combine all the sources into one
+MAIN_OBJ = $(BUILD_DIR)/main.o
+MAIN_SRC = $(MAIN_OBJ:.o=.cpp)
+OBJS = $(MAIN_OBJ)
+$(MAIN_OBJ): $(BUILD_DIR)/rmkit.h $(SRCS)
+	cat $(SRCS) > $(MAIN_SRC)
+	$(CXX) $(CXXFLAGS) -c -o $@ $(MAIN_SRC)
 
-$(OBJS): $(BUILD_DIR)/%.o : %.cpp
-	mkdir -p $(dir $@)
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
-
-$(BUILD_DIR)/$(TARGET): $(BUILD_DIR)/rmkit.h $(GAME_OBJS) $(OBJS)
+$(BUILD_DIR)/$(TARGET): $(GAME_OBJS) $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $(GAME_OBJS) $(OBJS)
 
 .PHONY: $(TARGET)
 $(TARGET): $(BUILD_DIR)/$(TARGET)
 
+
+#### auto-generate deps
+CXXFLAGS += -MMD -MP
+DEPS=$(OBJS:.o=.d)
+-include $(DEPS)
 
 
 #### Docker version of the toolchain
