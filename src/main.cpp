@@ -27,11 +27,13 @@ class Frontend : public frontend
 {
 public:
     Canvas * canvas;
+    ui::Text * status;
     float * colors;
     int ncolors;
     float timer_prev = 0.0;
     bool timer_active = false;
-    Frontend(Canvas * canvas) : frontend(), canvas(canvas)
+    Frontend(Canvas * canvas, ui::Text * status)
+        : frontend(), canvas(canvas), status(status)
     {
     }
     ~Frontend() {}
@@ -268,6 +270,8 @@ public:
 
     void status_bar(const char *text)
     {
+        status->text = text;
+        status->dirty = 1;
     }
 
     blitter * blitter_new(int w, int h)
@@ -297,6 +301,7 @@ extern const game lightup;
 class App {
 public:
     Canvas * canvas;
+    ui::Text * status;
     Frontend * fe;
     int timer_start = 0;
 
@@ -322,8 +327,12 @@ public:
 
         // Canvas
         canvas = new Canvas(100, 0, w - 200, h - 400);
-        fe = new Frontend(canvas);
         v0.pack_start(canvas, 100);
+
+        // Status bar
+        status = new ui::Text(10, 0, fb->width - 20, 50, "");
+        status->justify = ui::Text::LEFT;
+        v0.pack_end(status, 10);
 
         // Bottom toolbar
         auto new_game = new ui::Button(0, 0, 300, tb_h, "New Game");
@@ -373,6 +382,7 @@ public:
     void start_game()
     {
         midend_new_game(fe->me);
+        fe->status_bar("");
         int x = canvas->w;
         int y = canvas->h;
         midend_size(fe->me, &x, &y, /* user_size = */ true);
@@ -385,6 +395,7 @@ public:
     void restart_game()
     {
         midend_restart_game(fe->me);
+        fe->status_bar("");
         ui::MainLoop::refresh();
         ui::MainLoop::redraw();
     }
@@ -400,15 +411,16 @@ public:
         while (1) {
             ui::MainLoop::main();
             ui::MainLoop::redraw();
+            // TODO: this belongs somewhere else
             if (midend_status(fe->me) == 0) {
                 if (fe->timer_active) {
                     fe->trigger_timer();
                     continue;
                 }
             } else if (midend_status(fe->me) > 0) {
-                framebuffer::get()->draw_text(700, 1600, "YOU WIN", 50);
+                fe->status_bar("You win!");
             } else {
-                framebuffer::get()->draw_text(700, 1600, "YOU LOSE", 50);
+                fe->status_bar("You lose");
             }
             ui::MainLoop::read_input();
         }
