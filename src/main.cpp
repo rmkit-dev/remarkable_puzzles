@@ -332,6 +332,12 @@ public:
         auto restart = new ui::Button(0, 0, 300, tb_h, "Restart");
         toolbar.pack_start(restart);
 
+        auto redo = new ui::Button(0, 0, 100, tb_h, "=>");
+        toolbar.pack_end(redo);
+
+        auto undo = new ui::Button(0, 0, 100, tb_h, "<=");
+        toolbar.pack_end(undo);
+
         // ----- Events -----
         new_game->mouse.click += [=](auto &ev) {
             start_game();
@@ -339,6 +345,13 @@ public:
         restart->mouse.click += [=](auto &ev) {
             restart_game();
         };
+        undo->mouse.click += [=](auto &ev) {
+            midend_process_key(fe->me, 0, 0, UI_UNDO);
+        };
+        redo->mouse.click += [=](auto &ev) {
+            midend_process_key(fe->me, 0, 0, UI_REDO);
+        };
+
     }
 
     bool is_down = false;
