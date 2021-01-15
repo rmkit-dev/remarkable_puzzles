@@ -41,15 +41,11 @@ void PuzzleDrawer::draw_text(int x, int y, int fonttype,
         }
 
     // Align the text
-    // stdbtext::get_text_size() uses ascent + fontsize as the height.  So
-    // we subtract the fontsize to get just the ascent. Adjusting based on
-    // the ascent of the text should match what the backend expects,
-    // according to:
-    // https://www.chiark.greenend.org.uk/~sgtatham/puzzles/devel/drawing.html#drawing-draw-text
+    // fontsize should be close to the height (in pixels) of the text.
     if (align & ALIGN_VNORMAL) {
-        y -= (image.h - fontsize);
+        y -= fontsize;
     } else if (align  & ALIGN_VCENTRE) {
-        y -= (image.h - fontsize) / 2;
+        y -= fontsize / 2;
     }
     if (align & ALIGN_HCENTRE) {
         x -= image.w / 2;
