@@ -302,9 +302,6 @@ public:
 
     App()
     {
-        auto scene = ui::make_scene();
-        ui::MainLoop::set_scene(scene);
-
         auto fb = framebuffer::get();
         fb->clear_screen();
         fb->waveform_mode = WAVEFORM_MODE_INIT;
@@ -312,19 +309,36 @@ public:
         int w, h;
         std::tie(w, h) = fb->get_display_size();
 
-        canvas = new Canvas(100, 100, w - 200, h - 400);
-        fe = new Frontend(canvas);
-        auto new_game = new ui::Button(200, 1600, 400, 50, "New Game");
-        new_game->mouse.click += [=](input::SynMotionEvent &ev) {
-          midend_new_game(fe->me);
-          int x = framebuffer::get()->width;
-          int y = framebuffer::get()->height;
-          midend_size(fe->me, &x, &y, /* user_size = */ true);
-          midend_redraw(fe->me);
+        auto scene = ui::make_scene();
+        ui::MainLoop::set_scene(scene);
 
+        // ----- Layout -----
+        int tb_h = 100;
+        ui::Text::DEFAULT_FS = 30;
+
+        auto v0 = ui::VerticalLayout(0, 0, w, h, scene);
+        auto toolbar = ui::HorizontalLayout(0, 0, w, tb_h, scene);
+        v0.pack_end(toolbar);
+
+        // Canvas
+        canvas = new Canvas(100, 0, w - 200, h - 400);
+        fe = new Frontend(canvas);
+        v0.pack_start(canvas, 100);
+
+        // Bottom toolbar
+        auto new_game = new ui::Button(0, 0, 300, tb_h, "New Game");
+        toolbar.pack_start(new_game);
+
+        auto restart = new ui::Button(0, 0, 300, tb_h, "Restart");
+        toolbar.pack_start(restart);
+
+        // ----- Events -----
+        new_game->mouse.click += [=](auto &ev) {
+            start_game();
         };
-        scene->add(canvas);
-        scene->add(new_game);
+        restart->mouse.click += [=](auto &ev) {
+            restart_game();
+        };
     }
 
     bool is_down = false;
@@ -343,6 +357,24 @@ public:
         }
     }
 
+    void start_game()
+    {
+        midend_new_game(fe->me);
+        int x = canvas->w;
+        int y = canvas->h;
+        midend_size(fe->me, &x, &y, /* user_size = */ true);
+        debugf("midend_size(%p, %d, %d, false) => (%d, %d)\n", (void*)fe->me, canvas->w, canvas->h, x, y);
+        midend_redraw(fe->me);
+        ui::MainLoop::refresh();
+        ui::MainLoop::redraw();
+    }
+
+    void restart_game()
+    {
+        midend_restart_game(fe->me);
+        ui::MainLoop::refresh();
+        ui::MainLoop::redraw();
+    }
 
     void run()
     {
@@ -350,15 +382,8 @@ public:
         /* ui::MainLoop::key_event += PLS_DELEGATE(self.handle_key_event) */
 
         fe->init_midend(&lightup);
-        midend_new_game(fe->me);
-        int x = canvas->w;
-        int y = canvas->h;
-        midend_size(fe->me, &x, &y, /* user_size = */ true);
-        debugf("midend_size(%p, %d, %d, false) => (%d, %d)\n", (void*)fe->me, canvas->w, canvas->h, x, y);
+        start_game();
 
-        midend_redraw(fe->me);
-        ui::MainLoop::refresh();
-        ui::MainLoop::redraw();
         while (1) {
             ui::MainLoop::main();
             ui::MainLoop::redraw();
