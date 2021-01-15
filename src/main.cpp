@@ -374,18 +374,6 @@ public:
         restart->mouse.click += [=](auto &ev) {
             restart_game();
         };
-        // TODO: this can send us spinning in a loop when undoing from an
-        // already won game:
-        //   activate_timer()
-        //   start_draw()
-        //   end_draw()
-        //   activate_timer()
-        //   start_draw()
-        //   end_draw()
-        //   activate_timer()
-        //   start_draw()
-        //   end_draw()
-        //   ...
         undo->mouse.click += [=](auto &ev) {
             midend_process_key(fe->me, 0, 0, UI_UNDO);
         };
