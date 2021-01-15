@@ -292,11 +292,25 @@ public:
     }
 };
 
-
-/// RMKIT AGAIN
-
 // TODO: use the full game list
 extern const game lightup;
+
+class OutlineButton : public ui::Button {
+public:
+    using ui::Button::Button;
+    void before_render()
+    {
+        // center vertically
+        y_padding = (h - textWidget->font_size) / 2;
+        ui::Button::before_render();
+    }
+
+    void render()
+    {
+        ui::Button::render();
+        fb->draw_rect(x, y, w, h, BLACK, false);
+    }
+};
 
 class App {
 public:
@@ -335,16 +349,16 @@ public:
         v0.pack_end(status, 10);
 
         // Bottom toolbar
-        auto new_game = new ui::Button(0, 0, 300, tb_h, "New Game");
+        auto new_game = new OutlineButton(0, 0, 300, tb_h, "New Game");
         toolbar.pack_start(new_game);
 
-        auto restart = new ui::Button(0, 0, 300, tb_h, "Restart");
+        auto restart = new OutlineButton(0, 0, 300, tb_h, "Restart");
         toolbar.pack_start(restart);
 
-        auto redo = new ui::Button(0, 0, 100, tb_h, "=>");
+        auto redo = new OutlineButton(0, 0, 100, tb_h, "=>");
         toolbar.pack_end(redo);
 
-        auto undo = new ui::Button(0, 0, 100, tb_h, "<=");
+        auto undo = new OutlineButton(0, 0, 100, tb_h, "<=");
         toolbar.pack_end(undo);
 
         // ----- Events -----
