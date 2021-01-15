@@ -11,84 +11,7 @@
 #include "debug.hpp"
 #include "puzzles.hpp"
 
-
-////// RMKIT Stuff
-
-// based on the tutorial
-class Canvas: public ui::Widget {
-public:
-    framebuffer::FB *vfb;
-    framebuffer::FB *clipfb;
-    framebuffer::FB *drawfb;
-    int clip_x, clip_y, clip_w, clip_h;
-    bool full_redraw;
-    Canvas(int x, int y, int w, int h)
-        : Widget(x, y, w, h)
-    {
-        vfb = new framebuffer::VirtualFB(fb->width, fb->height);
-        clipfb = new framebuffer::VirtualFB(fb->width, fb->height);
-        drawfb = vfb; // start off unclipped.
-        full_redraw = true;
-        vfb->clear_screen();
-        clipfb->clear_screen();
-    }
-
-    void clip(int x, int y, int w, int h)
-    {
-        clip_x = x; clip_y = y; clip_w = w; clip_h = h;
-        drawfb = clipfb;
-        // copy existing data from the clip region so we don't overwrite it
-        // when we unclip.
-        copy_fb(vfb, clipfb, clip_x, clip_y, clip_w, clip_h);
-    }
-
-    void unclip()
-    {
-        copy_fb(clipfb, vfb, clip_x, clip_y, clip_w, clip_h);
-        drawfb = vfb;
-    }
-
-    void render()
-    {
-        // TODO: maybe find a better waveform mode?
-        fb->waveform_mode = WAVEFORM_MODE_AUTO;
-        if (full_redraw) {
-            full_redraw = false;
-            memcpy(fb->fbmem, vfb->fbmem, vfb->byte_size);
-            fb->dirty_area = vfb->dirty_area;
-            fb->dirty = 1;
-            debugf("======================RENDER FULL (%d, %d) -> (%d, %d)\n",
-                   fb->dirty_area.x0, fb->dirty_area.y0,
-                   fb->dirty_area.x1, fb->dirty_area.y1);
-            return;
-        }
-
-        auto dirty_rect = vfb->dirty_area;
-        debugf("======================RENDER (%d, %d) -> (%d, %d)\n",
-               dirty_rect.x0, dirty_rect.y0, dirty_rect.x1, dirty_rect.y1);
-        copy_fb(vfb, fb,
-                dirty_rect.x0, dirty_rect.y0,
-                dirty_rect.x1 - dirty_rect.x0,
-                dirty_rect.y1 - dirty_rect.y0);
-        framebuffer::reset_dirty(vfb->dirty_area);
-    }
-
-private:
-    void copy_fb(framebuffer::FB *src, framebuffer::FB *dest,
-                 int x, int y, int w, int h)
-    {
-        for (int i = 0; i < h; i++) {
-            memcpy(&dest->fbmem[(y + i)*fb->width + x],
-                   &src->fbmem[(y + i)*fb->width + x],
-                   w * sizeof(remarkable_color));
-        }
-        dest->update_dirty(dest->dirty_area, x, y);
-        dest->update_dirty(dest->dirty_area, x+w, y+h);
-        dest->dirty = 1;
-    }
-};
-
-// PUZZLES STUFF
+#include "ui/canvas.hpp"
 
 #include <sys/time.h>
 
@@ -196,18 +119,18 @@ public:
         }
 
         // Actually draw the bitmap
-        canvas->drawfb->draw_bitmap(image, x, y, alpha);
+        canvas->drawfb()->draw_bitmap(image, x, y, alpha);
         free(image.buffer);
     }
 
     void draw_rect(int x, int y, int w, int h, int colour)
     {
-        canvas->drawfb->draw_rect(x, y, w, h, get_color(colour));
+        canvas->drawfb()->draw_rect(x, y, w, h, get_color(colour));
     }
 
     void draw_line(int x1, int y1, int x2, int y2, int colour)
     {
-        canvas->drawfb->draw_line(x1, y1, x2, y2, 1, get_color(colour));
+        canvas->drawfb()->draw_line(x1, y1, x2, y2, 1, get_color(colour));
     }
 
     // Also from https://github.com/SteffenBauer/PocketPuzzles/blob/be8f3312341ac33c937ff0263b7c62fd3ae575cc/frontend/game.c#L82
@@ -276,16 +199,16 @@ public:
                 extendrow(miny, pp[0].x, pp[0].y, coords[0].x, coords[0].y, &minx, &maxx);
 
                 if (minx <= maxx) {
-                    canvas->drawfb->draw_line(minx, miny, maxx, miny, 1, fill);
+                    canvas->drawfb()->draw_line(minx, miny, maxx, miny, 1, fill);
                 }
             }
         }
 
         for (i = 0; i < npoints-1; i++) {
-            canvas->drawfb->draw_line(coords[i].x, coords[i].y, coords[i+1].x, coords[i+1].y, 1, outline);
+            canvas->drawfb()->draw_line(coords[i].x, coords[i].y, coords[i+1].x, coords[i+1].y, 1, outline);
         }
         // close the polygon
-        canvas->drawfb->draw_line(coords[i].x, coords[i].y, coords[0].x, coords[0].y, 1, outline);
+        canvas->drawfb()->draw_line(coords[i].x, coords[i].y, coords[0].x, coords[0].y, 1, outline);
     }
 
     void draw_circle(int cx, int cy, int radius,
@@ -293,28 +216,28 @@ public:
     {
         if (fillcolour == outlinecolour) {
             // simple filled circle
-            canvas->drawfb->draw_circle(cx, cy, radius,
-                                        /* stroke_size = */ 1,
-                                        get_color(outlinecolour),
-                                        /* fill = */ true);
+            canvas->drawfb()->draw_circle(cx, cy, radius,
+                                          /* stroke_size = */ 1,
+                                          get_color(outlinecolour),
+                                          /* fill = */ true);
         } else if (fillcolour == -1) {
             // outline only
-            canvas->drawfb->draw_circle(cx, cy, radius,
-                                        /* stroke_size = */ 1,
-                                        get_color(outlinecolour),
-                                        /* fill = */ false);
+            canvas->drawfb()->draw_circle(cx, cy, radius,
+                                          /* stroke_size = */ 1,
+                                          get_color(outlinecolour),
+                                          /* fill = */ false);
         } else {
             // separate fill and outline colors
             // 1: draw the fill
-            canvas->drawfb->draw_circle(cx, cy, radius,
-                                        /* stroke_size = */ 1,
-                                        get_color(fillcolour),
-                                        /* fill = */ true);
+            canvas->drawfb()->draw_circle(cx, cy, radius,
+                                          /* stroke_size = */ 1,
+                                          get_color(fillcolour),
+                                          /* fill = */ true);
             // 2: draw the outline
-            canvas->drawfb->draw_circle(cx, cy, radius,
-                                        /* stroke_size = */ 1,
-                                        get_color(outlinecolour),
-                                        /* fill = */ false);
+            canvas->drawfb()->draw_circle(cx, cy, radius,
+                                          /* stroke_size = */ 1,
+                                          get_color(outlinecolour),
+                                          /* fill = */ false);
         }
     }
 
@@ -323,14 +246,14 @@ public:
                          float x1, float y1, float x2, float y2,
                          int colour)
     {
-        canvas->drawfb->draw_line(x1, y1, x2, y2, thickness, get_color(colour));
+        canvas->drawfb()->draw_line(x1, y1, x2, y2, thickness, get_color(colour));
     }
 
     void draw_update(int x, int y, int w, int h)
     {
         canvas->dirty = 1;
-        canvas->drawfb->update_dirty(canvas->drawfb->dirty_area, x, y);
-        canvas->drawfb->update_dirty(canvas->drawfb->dirty_area, x+w, y+h);
+        canvas->drawfb()->update_dirty(canvas->drawfb()->dirty_area, x, y);
+        canvas->drawfb()->update_dirty(canvas->drawfb()->dirty_area, x+w, y+h);
     }
 
     void clip(int x, int y, int w, int h)
