@@ -19,23 +19,6 @@ extern "C" {
 #include "vendor/puzzles/puzzles.h"
 }
 
-// Debugging
-#if (defined NDEBUG) || !(defined DEBUG_FRONTEND)
-#define dbg_fe(...)
-#define dbg_color(...)
-#else
-#define dbg_fe debugf
-#define dbg_color(color) __dbg_color(handle, color)
-int __dbg_color(void *handle, int color) {
-    int ncolors;
-    float * colors = midend_colours(static_cast<frontend*>(handle)->me, &ncolors);
-    int r = colors[3*color+0] * 255;
-    int g = colors[3*color+1] * 255;
-    int b = colors[3*color+2] * 255;
-    return (r << 16) | (g << 8) | b;
-}
-#endif
-
 // frontend is a (C) typedef struct in puzzles.h; define it as an abstract base
 // class for C++.
 class frontend
@@ -110,6 +93,24 @@ protected:
     static struct drawing_api cpp_drawing_api;
 };
 
+
+// Debugging
+#define DEBUG_FRONTEND
+#if (defined NDEBUG) || !(defined DEBUG_FRONTEND)
+#define dbg_fe(...)
+#define dbg_color(...)
+#else
+#define dbg_fe debugf
+#define dbg_color(color) __dbg_color(handle, color)
+int __dbg_color(void *handle, int color) {
+    int ncolors;
+    float * colors = midend_colours(static_cast<frontend*>(handle)->me, &ncolors);
+    int r = colors[3*color+0] * 255;
+    int g = colors[3*color+1] * 255;
+    int b = colors[3*color+2] * 255;
+    return (r << 16) | (g << 8) | b;
+}
+#endif
 
 /** Midend api **/
 
