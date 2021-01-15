@@ -296,6 +296,48 @@ public:
 
 // TODO: use the full game list
 extern const game lightup;
+extern const game loopy;
+game selected_game = lightup;
+
+class SelectGameDialog : public ui::Pager {
+public:
+    PLS_DEFINE_SIGNAL(PAGER_EVENT, string)
+    class PAGER_EVENTS {
+      public:
+      PAGER_EVENT selected;
+    };
+    PAGER_EVENTS events;
+
+    map<string, game> games;
+    using ui::Pager::Pager;
+    SelectGameDialog(int x, int y, int w, int h) : ui::Pager(x, y, w, h, this)
+    {
+      printf("making select game dialog\n");
+      this->set_title("Select a game to play");
+      this->populate();
+      this->setup_for_render();
+    }
+
+    void populate()
+    {
+      this->games = {
+        {"lightup", lightup},
+        {"loopy", loopy}
+      };
+
+      for (auto g : this->games) {
+        this->options.push_back(g.first);
+      }
+    }
+
+    void on_row_selected(string val)
+    {
+      printf("row selected %s\n", val.c_str());
+      selected_game = this->games[val];
+      ui::MainLoop::hide_overlay();
+      events.selected(val);
+    }
+};
 
 class OutlineButton : public ui::Button {
 public:
@@ -318,6 +360,7 @@ class App {
 public:
     Canvas * canvas;
     ui::Text * status;
+    SelectGameDialog * select_game_dialog;
     Frontend * fe;
     int timer_start = 0;
 
@@ -350,12 +393,19 @@ public:
         status->justify = ui::Text::LEFT;
         v0.pack_end(status, 10);
 
+        select_game_dialog = new SelectGameDialog(0, 0, 500, 500);
+
+
+
         // Bottom toolbar
         auto new_game = new OutlineButton(0, 0, 300, tb_h, "New Game");
         toolbar.pack_start(new_game);
 
         auto restart = new OutlineButton(0, 0, 300, tb_h, "Restart");
         toolbar.pack_start(restart);
+
+        auto select_game = new OutlineButton(0, 0, 300, tb_h, "Select Game");
+        toolbar.pack_start(select_game);
 
         auto redo = new OutlineButton(0, 0, 100, tb_h, "=>");
         toolbar.pack_end(redo);
@@ -370,6 +420,15 @@ public:
         restart->mouse.click += [=](auto &ev) {
             restart_game();
         };
+        select_game->mouse.click += [=](auto &ev) {
+            select_game_dialog->show();
+        };
+        select_game_dialog->events.selected += [=](string) {
+          fe->init_midend(&selected_game);
+          start_game();
+        };
+
+
         // TODO: this can send us spinning in a loop when undoing from an
         // already won game:
         //   activate_timer()
@@ -430,7 +489,7 @@ public:
 
     void run()
     {
-        fe->init_midend(&lightup);
+        fe->init_midend(&selected_game);
         start_game();
 
         while (1) {
