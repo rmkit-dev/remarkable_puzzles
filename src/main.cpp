@@ -312,7 +312,7 @@ public:
         int w, h;
         std::tie(w, h) = fb->get_display_size();
 
-        canvas = new Canvas(0, 0, w, h);
+        canvas = new Canvas(100, 100, w - 200, h - 400);
         fe = new Frontend(canvas);
         auto new_game = new ui::Button(200, 1600, 400, 50, "New Game");
         new_game->mouse.click += [=](input::SynMotionEvent &ev) {
@@ -334,11 +334,11 @@ public:
             if (!is_down) {
                 is_down = true;
                 debugf("DOWN\n");
-                midend_process_key(fe->me, ev.x, ev.y, LEFT_BUTTON);
+                midend_process_key(fe->me, ev.x - canvas->x, ev.y - canvas->y, LEFT_BUTTON);
             }
         } else if (is_down) {
             debugf("UP\n");
-            midend_process_key(fe->me, ev.x, ev.y, LEFT_RELEASE);
+            midend_process_key(fe->me, ev.x - canvas->x, ev.y - canvas->y, LEFT_RELEASE);
             is_down = false;
         }
     }
