@@ -361,22 +361,22 @@ public:
             midend_process_key(fe->me, 0, 0, UI_REDO);
         };
 
-    }
-
-    bool is_down = false;
-    void handle_motion_event(input::SynMotionEvent &ev)
-    {
-        if (ev.left > 0) {
-            if (!is_down) {
-                is_down = true;
-                debugf("DOWN\n");
-                midend_process_key(fe->me, ev.x - canvas->x, ev.y - canvas->y, LEFT_BUTTON);
-            }
-        } else if (is_down) {
-            debugf("UP\n");
+        // Canvas handlers
+        canvas->mouse.down += [=](auto &ev) {
+            printf("DOWN(%d,%d) (%d,%d)\n", ev.x - canvas->x, ev.y - canvas->y, ev.x, ev.y);
+            midend_process_key(fe->me, ev.x - canvas->x, ev.y - canvas->y, LEFT_BUTTON);
+        };
+        canvas->mouse.up += [=](auto &ev) {
+            printf("UP(%d,%d) (%d,%d)\n", ev.x - canvas->x, ev.y - canvas->y, ev.x, ev.y);
             midend_process_key(fe->me, ev.x - canvas->x, ev.y - canvas->y, LEFT_RELEASE);
-            is_down = false;
-        }
+        };
+        canvas->mouse.leave += [=](auto &ev) {
+            printf("LEAVE(%d,%d) (%d,%d)\n", ev.x - canvas->x, ev.y - canvas->y, ev.x, ev.y);
+            midend_process_key(fe->me, ev.x - canvas->x, ev.y - canvas->y, LEFT_RELEASE);
+        };
+
+        // Frontend
+        fe = new Frontend(canvas, status);
     }
 
     void start_game()
@@ -402,9 +402,6 @@ public:
 
     void run()
     {
-        ui::MainLoop::motion_event += PLS_DELEGATE(handle_motion_event);
-        /* ui::MainLoop::key_event += PLS_DELEGATE(self.handle_key_event) */
-
         fe->init_midend(&lightup);
         start_game();
 
