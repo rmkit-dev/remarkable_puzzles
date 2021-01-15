@@ -270,6 +270,8 @@ public:
 
     void status_bar(const char *text)
     {
+        // TODO: this doesn't actually clear all the existing text
+        status->undraw();
         status->text = text;
         status->dirty = 1;
     }
