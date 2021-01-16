@@ -245,6 +245,9 @@ public:
 
     void start_game()
     {
+        canvas->drawfb()->clear_screen();
+        ui::MainLoop::refresh();
+        ui::MainLoop::redraw();
         midend_new_game(fe->me);
         fe->status_bar("");
         int x = canvas->w;
