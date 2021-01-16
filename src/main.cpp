@@ -118,17 +118,17 @@ public:
 
         auto v0 = ui::VerticalLayout(0, 0, w, h, scene);
         auto toolbar = ui::HorizontalLayout(0, 0, w, tb_h, scene);
-        v0.pack_end(toolbar);
-
-        // Canvas
-        canvas = new Canvas(100, 0, w - 200, h - 400);
-        drawer = new PuzzleDrawer(canvas);
-        v0.pack_start(canvas, 100);
+        v0.pack_start(toolbar);
 
         // Status bar
         status = new ui::Text(10, 0, fb->width - 20, 50, "");
         status->justify = ui::Text::LEFT;
         v0.pack_end(status, 10);
+
+        // Canvas
+        canvas = new Canvas(100, 0, w - 200, h - 400);
+        drawer = new PuzzleDrawer(canvas);
+        v0.pack_center(canvas);
 
         // Bottom toolbar
         auto new_game = new OutlineButton(0, 0, 300, tb_h, "New Game");
