@@ -15,9 +15,23 @@
 
 #include "debug.hpp"
 
+// Some acrobatics since puzzles.h defines its own min and max macros which
+// conflict with std::min and std::max
+#ifndef min
+#define min NOPE
+#endif
+#ifndef max
+#define max NOPE
+#endif
 extern "C" {
 #include "vendor/puzzles/puzzles.h"
 }
+#if min == NOPE
+#undef min
+#endif
+#if max == NOPE
+#undef max
+#endif
 
 class DrawingApi;
 
