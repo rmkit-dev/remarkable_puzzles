@@ -159,20 +159,25 @@ public:
 
         // Canvas handlers
         canvas->mouse.down += [=](auto &ev) {
-            printf("DOWN(%d,%d) (%d,%d)\n", ev.x - canvas->x, ev.y - canvas->y, ev.x, ev.y);
-            midend_process_key(fe->me, ev.x - canvas->x, ev.y - canvas->y, LEFT_BUTTON);
+            canvas_mouse_event(ev, LEFT_BUTTON);
         };
         canvas->mouse.up += [=](auto &ev) {
-            printf("UP(%d,%d) (%d,%d)\n", ev.x - canvas->x, ev.y - canvas->y, ev.x, ev.y);
-            midend_process_key(fe->me, ev.x - canvas->x, ev.y - canvas->y, LEFT_RELEASE);
+            canvas_mouse_event(ev, LEFT_RELEASE);
         };
         canvas->mouse.leave += [=](auto &ev) {
-            printf("LEAVE(%d,%d) (%d,%d)\n", ev.x - canvas->x, ev.y - canvas->y, ev.x, ev.y);
-            midend_process_key(fe->me, ev.x - canvas->x, ev.y - canvas->y, LEFT_RELEASE);
+            canvas_mouse_event(ev, LEFT_RELEASE);
         };
 
         // Frontend
         fe = new Frontend(status);
+    }
+
+    void canvas_mouse_event(input::SynMotionEvent &ev, int key_id)
+    {
+        int x = canvas->logical_x(ev.x);
+        int y = canvas->logical_y(ev.y);
+        debugf("KEY %d (%d,%d); screen (%d,%d)\n", key_id, x, y, ev.x, ev.y);
+        midend_process_key(fe->me, x, y, key_id);
     }
 
     void start_game()
@@ -183,6 +188,8 @@ public:
         int y = canvas->h;
         midend_size(fe->me, &x, &y, /* user_size = */ true);
         debugf("midend_size(%p, %d, %d, false) => (%d, %d)\n", (void*)fe->me, canvas->w, canvas->h, x, y);
+        // center the canvas
+        canvas->translate((canvas->w - x) / 2, (canvas->h - y) / 2);
         midend_redraw(fe->me);
         ui::MainLoop::refresh();
         ui::MainLoop::redraw();
