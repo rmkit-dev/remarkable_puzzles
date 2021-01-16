@@ -76,6 +76,12 @@ void Canvas::render()
     framebuffer::FB * vfb = drawfb(0);
 
     auto dirty = vfb->dirty_area;
+    // TODO: this is necessary for painting after an overlay has been shown. Is
+    // there a way to figure out which area is dirty in that situation?
+    dirty.x0 = 0;
+    dirty.y0 = 0;
+    dirty.x1 = vfb->width;
+    dirty.y1 = vfb->height;
     debugf("======================RENDER (%d, %d) -> (%d, %d)\n",
             dirty.x0, dirty.y0, dirty.x1, dirty.y1);
     copy_fb(vfb, dirty.x0, dirty.y0,
