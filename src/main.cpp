@@ -130,7 +130,7 @@ public:
         drawer = new PuzzleDrawer(canvas);
         v0.pack_center(canvas);
 
-        // Bottom toolbar
+        // Toolbar
         auto new_game = new OutlineButton(0, 0, 300, tb_h, "New Game");
         toolbar.pack_start(new_game);
 
