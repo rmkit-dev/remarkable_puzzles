@@ -22,10 +22,20 @@ public:
 
 class Canvas: public ui::Widget {
 public:
+    int trans_x = 0;
+    int trans_y = 0;
+
     Canvas(int x, int y, int w, int h);
     virtual ~Canvas();
 
     void render();
+
+    // translation functions
+    void translate(int tx, int ty) { trans_x = tx; trans_y = ty; }
+    int logical_x(int x) { return x - trans_x - this->x; }
+    int logical_y(int y) { return y - trans_y - this->y; }
+    int screen_x(int x) { return x + trans_x + this->x; }
+    int screen_y(int y) { return y + trans_y + this->y; }
 
     // Layer access
     Layer * add_layer()

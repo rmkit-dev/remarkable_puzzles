@@ -79,7 +79,7 @@ void Canvas::render()
     debugf("======================RENDER (%d, %d) -> (%d, %d)\n",
             dirty.x0, dirty.y0, dirty.x1, dirty.y1);
     copy_fb(vfb, dirty.x0, dirty.y0,
-            fb, this->x + dirty.x0, this->y + dirty.y0,
+            fb, this->x + dirty.x0 + trans_x, this->y + dirty.y0 + trans_y,
             dirty.x1 - dirty.x0, dirty.y1 - dirty.y0);
     framebuffer::reset_dirty(vfb->dirty_area);
 }
