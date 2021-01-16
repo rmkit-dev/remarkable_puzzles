@@ -9,6 +9,7 @@
 
 #include "debug.hpp"
 #include "puzzles.hpp"
+#include "game_list.hpp"
 
 #include "ui/canvas.hpp"
 #include "ui/puzzle_drawer.hpp"
@@ -72,9 +73,6 @@ public:
     }
 };
 
-// TODO: use the full game list
-extern const game lightup;
-
 class OutlineButton : public ui::Button {
 public:
     using ui::Button::Button;
@@ -95,6 +93,7 @@ public:
 class IApp {
 public:
     virtual void select_preset(game_params * params) = 0;
+    virtual void select_game(const game * a_game) = 0;
 };
 
 class PresetsMenu : public ui::TextDropdown {
@@ -127,6 +126,25 @@ public:
     void on_select(int idx)
     {
         app->select_preset(params[idx]);
+    }
+};
+
+class GamesMenu : public ui::TextDropdown {
+public:
+    IApp * app;
+    GamesMenu(IApp * app, int x, int y, int w, int h)
+        : ui::TextDropdown(x, y, w, h, "Games"), app(app)
+    {
+        dir = ui::DropdownButton::DOWN;
+        auto section = add_section("Games");
+        for (const game * g : GAME_LIST) {
+            section->add_options(std::vector<std::string>{g->name});
+        }
+    }
+
+    void on_select(int idx)
+    {
+        app->select_game(GAME_LIST[idx]);
     }
 };
 
@@ -178,6 +196,9 @@ public:
 
         presets = new PresetsMenu(this, 0, 0, 300, tb_h);
         toolbar.pack_start(presets);
+
+        auto games = new GamesMenu(this, 0, 0, 300, tb_h);
+        toolbar.pack_start(games);
 
         auto redo = new OutlineButton(0, 0, 100, tb_h, "=>");
         toolbar.pack_end(redo);
@@ -251,10 +272,16 @@ public:
         start_game();
     }
 
+    void select_game(const game * a_game)
+    {
+        fe->init_midend(drawer, a_game);
+        presets->init_presets(fe->me);
+        start_game();
+    }
+
     void run()
     {
-        fe->init_midend(drawer, &lightup);
-        start_game();
+        select_game(&lightup);
 
         while (1) {
             // Check timer
