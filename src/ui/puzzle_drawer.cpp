@@ -6,15 +6,10 @@ remarkable_color PuzzleDrawer::rm_color(int idx)
 {
     float *rgb = get_color(idx);
     int r = rgb[0] * 255;
-    int b = rgb[1] * 255;
-    int g = rgb[2] * 255;
+    int g = rgb[1] * 255;
+    int b = rgb[2] * 255;
     // see fb.cpy
-    remarkable_color c = ((r & 0b11111000) << 8) | ((g & 0b11111100) << 3) | (b >> 3);
-    // TODO: Is this backwards?
-    // Or is it just that we have to tweak the colors a bit since the display
-    // is grayscale?
-    c = ((c & 0xff) << 8) | ((c & 0xff00) >> 8);
-    return c;
+    return ((r & 0b11111000) << 8) | ((g & 0b11111100) << 3) | (b >> 3);
 }
 
 
