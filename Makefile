@@ -48,10 +48,10 @@ MAIN_SRC = $(MAIN_OBJ:.o=.cpp)
 OBJS = $(MAIN_OBJ)
 
 $(MAIN_SRC): $(SRCS)
-	rm $(MAIN_SRC)
+	echo -n "" > $(MAIN_SRC)
 	for f in $(SRCS); do echo "#include \"$$f\"" >> $(MAIN_SRC); done
 
-$(MAIN_OBJ): $(BUILD_DIR)/rmkit.h $(MAIN_SRCS)
+$(MAIN_OBJ): $(BUILD_DIR)/rmkit.h $(MAIN_SRC)
 	$(CXX) $(CXXFLAGS) -c -o $@ $(MAIN_SRC)
 
 $(BUILD_DIR)/$(TARGET): $(GAME_OBJS) $(OBJS)
