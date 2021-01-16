@@ -92,10 +92,49 @@ public:
     }
 };
 
-class App {
+class IApp {
+public:
+    virtual void select_preset(game_params * params) = 0;
+};
+
+class PresetsMenu : public ui::TextDropdown {
+public:
+    IApp * app;
+    preset_menu * menu;
+    std::vector<game_params *> params;
+    PresetsMenu(IApp * app, int x, int y, int w, int h)
+        : ui::TextDropdown(x, y, w, h, "Presets"), app(app)
+    {
+        dir = ui::DropdownButton::DOWN;
+    }
+
+    void init_presets(midend * me)
+    {
+        this->scene = NULL;
+        this->options.clear();
+        this->sections.clear();
+        params.clear();
+        menu = midend_get_presets(me, NULL);
+        debugf("Loading %d presets\n", menu->n_entries);
+        auto section = add_section("Presets");
+        for (int i = 0; i < menu->n_entries; i++) {
+            debugf("Preset %d: %s\n", i, menu->entries[i].title);
+            params.push_back(menu->entries[i].params);
+            section->add_options(std::vector<std::string>{menu->entries[i].title});
+        }
+    }
+
+    void on_select(int idx)
+    {
+        app->select_preset(params[idx]);
+    }
+};
+
+class App : public IApp {
 public:
     Canvas * canvas;
     PuzzleDrawer * drawer;
+    PresetsMenu * presets;
     ui::Text * status;
     Frontend * fe;
     int timer_start = 0;
@@ -136,6 +175,9 @@ public:
 
         auto restart = new OutlineButton(0, 0, 300, tb_h, "Restart");
         toolbar.pack_start(restart);
+
+        presets = new PresetsMenu(this, 0, 0, 300, tb_h);
+        toolbar.pack_start(presets);
 
         auto redo = new OutlineButton(0, 0, 100, tb_h, "=>");
         toolbar.pack_end(redo);
@@ -201,6 +243,12 @@ public:
         fe->status_bar("");
         ui::MainLoop::refresh();
         ui::MainLoop::redraw();
+    }
+
+    void select_preset(game_params * params)
+    {
+        midend_set_params(fe->me, params);
+        start_game();
     }
 
     void run()
