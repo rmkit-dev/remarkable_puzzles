@@ -22,6 +22,7 @@ $(BUILD_DIR)/rmkit.h:
 	cd vendor/rmkit && $(MAKE) rmkit.h
 	mkdir -p $(dir $@)
 	mv vendor/rmkit/src/build/rmkit.h $(BUILD_DIR)
+	cp vendor/rmkit/src/build/$(STB) $(BUILD_DIR)
 
 
 
@@ -55,7 +56,7 @@ $(MAIN_OBJ): $(BUILD_DIR)/rmkit.h $(MAIN_SRC)
 	$(CXX) $(CXXFLAGS) -c -o $@ $(MAIN_SRC)
 
 $(BUILD_DIR)/$(TARGET): $(GAME_OBJS) $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $@ $(GAME_OBJS) $(OBJS)
+	$(CXX) $(CXXFLAGS) -o $@ $(GAME_OBJS) $(OBJS) $(BUILD_DIR)/$(STB)
 
 .PHONY: $(TARGET)
 $(TARGET): $(BUILD_DIR)/$(TARGET)
