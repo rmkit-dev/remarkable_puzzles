@@ -15,4 +15,5 @@ STB libraries copyright (c) 2017 Sean Barrett
 
 ---
 
-Polygon filling algorithm from PocketPuzzles copyright (c) 2020 Steffen Bauer
+Polygon filling algorithm and custom colors adapted from from PocketPuzzles
+copyright (c) 2020 Steffen Bauer

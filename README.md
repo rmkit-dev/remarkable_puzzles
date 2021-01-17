@@ -35,6 +35,12 @@ Stop xochitl
 ssh remarkable -t systemctl stop xochitl
 ```
 
+Copy config files
+
+```sh
+scp -r config/ remarkable:/opt/etc/puzzles/
+```
+
 Copy the executable and run it
 
 ```sh
