@@ -112,6 +112,13 @@ void activate_timer(frontend *fe)
 
 // == Drawing API ==
 
+void DrawingApi::update_colors()
+{
+    if (colors != nullptr)
+        sfree(colors);
+    colors = midend_colours(fe->me, &ncolors);
+}
+
 void cpp_draw_text(void *handle, int x, int y, int fonttype,
                    int fontsize, int align, int colour,
                    const char *text)

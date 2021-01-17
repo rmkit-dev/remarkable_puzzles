@@ -78,9 +78,9 @@ public:
     void set_frontend(frontend * fe) { this->fe = fe; }
 
     // -- Colors --
-    float *colors;
+    float *colors = NULL;
     int ncolors;
-    void update_colors() { colors = midend_colours(fe->me, &ncolors); }
+    virtual void update_colors();
     float* get_color(int idx) { return colors + 3*idx; }
 
     // -- Drawing functions --
