@@ -1,3 +1,4 @@
+#include "config.hpp"
 #include "puzzles.hpp"
 #include "ui/canvas.hpp"
 #include "ui/puzzle_drawer.hpp"
@@ -10,6 +11,12 @@ remarkable_color PuzzleDrawer::rm_color(int idx)
     int b = rgb[2] * 255;
     // see fb.cpy
     return ((r & 0b11111000) << 8) | ((g & 0b11111100) << 3) | (b >> 3);
+}
+
+void PuzzleDrawer::update_colors()
+{
+    DrawingApi::update_colors();
+    config::color_overrides(fe->ourgame, colors, ncolors);
 }
 
 

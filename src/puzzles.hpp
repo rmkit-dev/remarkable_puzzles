@@ -41,6 +41,7 @@ class frontend
 {
 public:
     midend *me;
+    const game * ourgame;
 
     frontend() : me(NULL) { }
 

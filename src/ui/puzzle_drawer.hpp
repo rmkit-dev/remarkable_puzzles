@@ -12,6 +12,8 @@ public:
     PuzzleDrawer(Canvas * canvas) : DrawingApi(), canvas(canvas) {}
     ~PuzzleDrawer() {}
 
+    void update_colors();
+
     void draw_text(int x, int y, int fonttype,
                    int fontsize, int align, int colour,
                    const char *text);
