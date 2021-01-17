@@ -17,9 +17,11 @@ DOCKER_ENV=-e ARCH -e BUILD -e BUILD_ROOT -e BUILD_DIR
 ifeq ($(ARCH),arm)
 	CXX = arm-linux-gnueabihf-g++
 	CC  = arm-linux-gnueabihf-gcc
+	STB = stb.arm.o
 else
 	CXX = g++
 	CC  = gcc
+	STB = stb.x86.o
 endif
 
 ifeq ($(BUILD),debug)
