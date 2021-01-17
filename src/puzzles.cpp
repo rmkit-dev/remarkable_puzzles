@@ -47,6 +47,8 @@ int __dbg_color(void *handle, int color) {
 
 void frontend::init_midend(DrawingApi * drawer, const game *ourgame)
 {
+    if (me != NULL)
+        midend_free(me);
     me = midend_new(this, ourgame, &cpp_drawing_api, drawer);
     drawer->set_frontend(this);
     drawer->update_colors();
