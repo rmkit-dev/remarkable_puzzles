@@ -75,7 +75,7 @@ public:
     void before_render()
     {
         // center vertically
-        y_padding = (h - textWidget->font_size) / 2;
+        y_padding = (h - style.font_size) / 2;
         ui::Button::before_render();
     }
 
@@ -167,7 +167,8 @@ public:
 
         // ----- Layout -----
         int tb_h = 100;
-        ui::Text::DEFAULT_FS = 30;
+        ui::Style::DEFAULT.font_size = 30;
+        auto status_style = ui::Stylesheet().justify_left();
 
         auto v0 = ui::VerticalLayout(0, 0, w, h, scene);
         auto toolbar = ui::HorizontalLayout(0, 0, w, tb_h, scene);
@@ -175,7 +176,7 @@ public:
 
         // Status bar
         status = new ui::Text(10, 0, fb->width - 20, 50, "");
-        status->justify = ui::Text::LEFT;
+        status->set_style(status_style);
         v0.pack_end(status, 10);
 
         // Canvas
