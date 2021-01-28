@@ -69,23 +69,6 @@ public:
     }
 };
 
-class OutlineButton : public ui::Button {
-public:
-    using ui::Button::Button;
-    void before_render()
-    {
-        // center vertically
-        y_padding = (h - style.font_size) / 2;
-        ui::Button::before_render();
-    }
-
-    void render()
-    {
-        ui::Button::render();
-        fb->draw_rect(x, y, w, h, BLACK, false);
-    }
-};
-
 class IApp {
 public:
     virtual void select_preset(game_params * params) = 0;
@@ -168,6 +151,7 @@ public:
         // ----- Layout -----
         int tb_h = 100;
         ui::Style::DEFAULT.font_size = 30;
+        ui::Button::DEFAULT_STYLE += ui::Stylesheet().valign_middle().border_all();
         auto status_style = ui::Stylesheet().justify_left();
 
         auto v0 = ui::VerticalLayout(0, 0, w, h, scene);
@@ -185,10 +169,10 @@ public:
         v0.pack_center(canvas);
 
         // Toolbar
-        auto new_game = new OutlineButton(0, 0, 300, tb_h, "New Game");
+        auto new_game = new ui::Button(0, 0, 300, tb_h, "New Game");
         toolbar.pack_start(new_game);
 
-        auto restart = new OutlineButton(0, 0, 300, tb_h, "Restart");
+        auto restart = new ui::Button(0, 0, 300, tb_h, "Restart");
         toolbar.pack_start(restart);
 
         presets = new PresetsMenu(this, 0, 0, 300, tb_h);
@@ -197,10 +181,10 @@ public:
         auto games = new GamesMenu(this, 0, 0, 300, tb_h);
         toolbar.pack_start(games);
 
-        auto redo = new OutlineButton(0, 0, 100, tb_h, "=>");
+        auto redo = new ui::Button(0, 0, 100, tb_h, "=>");
         toolbar.pack_end(redo);
 
-        auto undo = new OutlineButton(0, 0, 100, tb_h, "<=");
+        auto undo = new ui::Button(0, 0, 100, tb_h, "<=");
         toolbar.pack_end(undo);
 
         // ----- Events -----
