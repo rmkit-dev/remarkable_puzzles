@@ -9,7 +9,10 @@ class PuzzleDrawer : public DrawingApi
 public:
     Canvas * canvas;
 
-    PuzzleDrawer(Canvas * canvas) : DrawingApi(), canvas(canvas) {}
+    PuzzleDrawer(Canvas * canvas) : DrawingApi(), canvas(canvas)
+    {
+        canvas->drawfb()->dither = framebuffer::DITHER::BAYER_2;
+    }
     ~PuzzleDrawer() {}
 
     void update_colors();

@@ -37,6 +37,7 @@ void Layer::clip(int x, int y, int w, int h)
     // be nice to add clipping as a framebuffer concept.
     if (clipfb == NULL)
         clipfb = new framebuffer::VirtualFB(fb->width, fb->height);
+    clipfb->dither = drawfb->dither;
     clip_x = x; clip_y = y; clip_w = w; clip_h = h;
     drawfb = clipfb;
     // copy existing data from the clip region so we don't overwrite it when we
