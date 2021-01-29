@@ -12,6 +12,9 @@ release: default
 debug: BUILD=debug
 debug: default
 
+.PHONY: prof
+prof: BUILD=prof
+prof: default
 
 
 #### rmkit

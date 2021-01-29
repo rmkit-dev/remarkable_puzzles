@@ -26,6 +26,8 @@ endif
 
 ifeq ($(BUILD),debug)
 	BUILD_FLAGS = -g
+else ifeq ($(BUILD),prof)
+	BUILD_FLAGS = -g -pg -O2 -DNDEBUG
 else
 	BUILD_FLAGS = -O2 -DNDEBUG
 endif
