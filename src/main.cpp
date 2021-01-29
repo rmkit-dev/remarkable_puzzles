@@ -226,9 +226,14 @@ public:
 
     void start_game()
     {
+        // Clear the screen
         canvas->drawfb()->clear_screen();
-        ui::MainLoop::refresh();
-        ui::MainLoop::redraw();
+        auto fb = framebuffer::get();
+        fb->clear_screen();
+        fb->waveform_mode = WAVEFORM_MODE_INIT;
+        fb->redraw_screen(true);
+        fb->waveform_mode = WAVEFORM_MODE_AUTO;
+
         midend_new_game(fe->me);
         fe->status_bar("");
         int x = canvas->w;
