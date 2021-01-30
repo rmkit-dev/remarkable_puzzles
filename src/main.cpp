@@ -9,6 +9,7 @@
 
 #include "ui/canvas.hpp"
 #include "ui/puzzle_drawer.hpp"
+#include "ui/msg.hpp"
 
 #include <sys/time.h>
 
@@ -133,8 +134,12 @@ public:
     PuzzleDrawer * drawer;
     PresetsMenu * presets;
     ui::Text * status;
+
+    SimpleMessageDialog * game_over = nullptr;
+
     Frontend * fe;
     int timer_start = 0;
+    int last_status = 0;
 
     App()
     {
@@ -236,6 +241,7 @@ public:
 
         midend_new_game(fe->me);
         fe->status_bar("");
+        last_status = 0;
         int x = canvas->w;
         int y = canvas->h;
         midend_size(fe->me, &x, &y, /* user_size = */ true);
@@ -251,6 +257,7 @@ public:
     {
         midend_restart_game(fe->me);
         fe->status_bar("");
+        last_status = 0;
         ui::MainLoop::refresh();
         ui::MainLoop::redraw();
     }
@@ -268,6 +275,22 @@ public:
         start_game();
     }
 
+    void check_game_over()
+    {
+        int status = midend_status(fe->me);
+        if (status == last_status)
+            return;
+        last_status = status;
+        // 0 = game still in progress
+        if (status == 0)
+            return;
+        // otherwise, show the game over dialog
+        bool win = status > 0;
+        if (game_over == nullptr)
+            game_over = new SimpleMessageDialog(500, 200);
+        game_over->show(win ? "You win!" : "Game over");
+    }
+
     void run()
     {
         select_game(&lightup);
@@ -277,12 +300,11 @@ public:
             if (fe->timer_active) {
                 fe->trigger_timer();
             }
-            // Check win/lose
-            int status = midend_status(fe->me);
-            if (status > 0) {
-                fe->status_bar("You win!");
-            } else if (status < 0) {
-                fe->status_bar("You lose");
+            // properly behaved games should shut off the timer when the
+            // game is over, so wait to check for game over until the timer is
+            // off.
+            if (! fe->timer_active) {
+                check_game_over();
             }
             // Process events and redraw
             ui::MainLoop::main();
