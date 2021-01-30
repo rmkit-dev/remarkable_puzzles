@@ -72,8 +72,6 @@ Canvas::~Canvas()
 void Canvas::render()
 {
     // TODO: merge layers
-    // TODO: consider different waveform modes
-    fb->waveform_mode = WAVEFORM_MODE_AUTO;
     framebuffer::FB * vfb = drawfb(0);
 
     auto dirty = vfb->dirty_area;

@@ -237,7 +237,7 @@ public:
         fb->clear_screen();
         fb->waveform_mode = WAVEFORM_MODE_INIT;
         fb->redraw_screen(true);
-        fb->waveform_mode = WAVEFORM_MODE_AUTO;
+        fb->waveform_mode = WAVEFORM_MODE_DU;
 
         midend_new_game(fe->me);
         fe->status_bar("");
