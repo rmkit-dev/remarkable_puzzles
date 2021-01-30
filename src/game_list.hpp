@@ -2,6 +2,7 @@
 #define RMP_GAME_LIST_HPP
 
 extern const game blackbox;
+extern const game cube;
 extern const game galaxies;
 extern const game lightup;
 extern const game mines;
@@ -12,6 +13,7 @@ extern const game untangle;
 
 static const game * GAME_LIST[] = {
     &blackbox,
+    &cube,
     &galaxies,
     &lightup,
     &mines,
