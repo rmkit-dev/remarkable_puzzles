@@ -3,7 +3,7 @@
 
 #include <rmkit.h>
 
-class SimpleMessageDialog : ui::DialogBase {
+class SimpleMessageDialog : public ui::DialogBase {
 protected:
     ui::Text * textWidget;
 public:
