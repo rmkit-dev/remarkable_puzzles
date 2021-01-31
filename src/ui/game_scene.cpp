@@ -16,11 +16,16 @@ void init_presets_menu(ui::TextDropdown * presets_menu, midend * me)
     presets_menu->options.clear();
     presets_menu->sections.clear();
     // fill in preset names
-    auto section = presets_menu->add_section(presets_menu->text);
+    auto section = presets_menu->add_section("Presets");
     std::vector<std::string> names;
     auto menu = midend_get_presets(me, NULL);
-    for (int i = 0; i < menu->n_entries; i++)
-        names.push_back(menu->entries[i].title);
+    int preset_id = midend_which_preset(me);
+    for (int i = 0; i < menu->n_entries; i++) {
+        auto entry = menu->entries[i];
+        names.push_back(entry.title);
+        if (entry.id == preset_id)
+            presets_menu->text = entry.title;
+    }
     section->add_options(names);
 }
 
