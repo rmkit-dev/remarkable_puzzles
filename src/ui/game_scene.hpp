@@ -46,6 +46,7 @@ public:
     void restart_game();
 
     void check_timer();
+    void check_solved();
     bool wants_timer() { return timer_active; }
 
     // Puzzle frontend implementation
@@ -59,7 +60,6 @@ protected:
     void handle_puzzle_key(int key_id);
     void handle_puzzle_key(int x, int y, int key_id);
     void handle_canvas_event(input::SynMotionEvent & evt, int key_id);
-    void check_solved();
 };
 
 

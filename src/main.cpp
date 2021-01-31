@@ -30,6 +30,7 @@ public:
     {
         while (1) {
             game_scene->check_timer();
+            game_scene->check_solved();
             // Process events and redraw
             ui::MainLoop::main();
             ui::MainLoop::redraw();

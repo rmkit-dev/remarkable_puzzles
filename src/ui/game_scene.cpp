@@ -135,6 +135,8 @@ void GameScene::handle_puzzle_key(int x, int y, int key_id)
 
 void GameScene::check_solved()
 {
+    if (timer_active)
+        return;
     int status = midend_status(me);
     if (status == last_status)
         return;
@@ -204,10 +206,7 @@ void GameScene::check_timer()
         if ((now - timer_prev) > timer::INTERVAL_S) {
             midend_timer(me, (float)(now - timer_prev));
             timer_prev = now;
-            check_solved();
         }
-    } else {
-        check_solved();
     }
 }
 
