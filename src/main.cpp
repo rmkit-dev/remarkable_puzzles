@@ -70,69 +70,11 @@ public:
     }
 };
 
-class IApp {
-public:
-    virtual void select_preset(game_params * params) = 0;
-    virtual void select_game(const game * a_game) = 0;
-};
-
-class PresetsMenu : public ui::TextDropdown {
-public:
-    IApp * app;
-    preset_menu * menu;
-    std::vector<game_params *> params;
-    PresetsMenu(IApp * app, int x, int y, int w, int h)
-        : ui::TextDropdown(x, y, w, h, "Presets"), app(app)
-    {
-        dir = ui::DropdownButton::DOWN;
-    }
-
-    void init_presets(midend * me)
-    {
-        this->scene = NULL;
-        this->options.clear();
-        this->sections.clear();
-        params.clear();
-        menu = midend_get_presets(me, NULL);
-        debugf("Loading %d presets\n", menu->n_entries);
-        auto section = add_section("Presets");
-        for (int i = 0; i < menu->n_entries; i++) {
-            debugf("Preset %d: %s\n", i, menu->entries[i].title);
-            params.push_back(menu->entries[i].params);
-            section->add_options(std::vector<std::string>{menu->entries[i].title});
-        }
-    }
-
-    void on_select(int idx)
-    {
-        app->select_preset(params[idx]);
-    }
-};
-
-class GamesMenu : public ui::TextDropdown {
-public:
-    IApp * app;
-    GamesMenu(IApp * app, int x, int y, int w, int h)
-        : ui::TextDropdown(x, y, w, h, "Games"), app(app)
-    {
-        dir = ui::DropdownButton::DOWN;
-        auto section = add_section("Games");
-        for (const game * g : GAME_LIST) {
-            section->add_options(std::vector<std::string>{g->name});
-        }
-    }
-
-    void on_select(int idx)
-    {
-        app->select_game(GAME_LIST[idx]);
-    }
-};
-
-class App : public IApp {
+class App {
 public:
     Canvas * canvas;
     PuzzleDrawer * drawer;
-    PresetsMenu * presets;
+    ui::TextDropdown * presets;
     ui::Text * status;
 
     SimpleMessageDialog * game_over = nullptr;
@@ -180,10 +122,13 @@ public:
         auto restart = new ui::Button(0, 0, 300, tb_h, "Restart");
         toolbar.pack_start(restart);
 
-        presets = new PresetsMenu(this, 0, 0, 300, tb_h);
+        presets = new ui::TextDropdown(0, 0, 300, tb_h, "Presets");
+        presets->dir = ui::DropdownButton::DOWN;
         toolbar.pack_start(presets);
 
-        auto games = new GamesMenu(this, 0, 0, 300, tb_h);
+        auto games = new ui::TextDropdown(0, 0, 300, tb_h, "Games");
+        games->dir = ui::DropdownButton::DOWN;
+        init_games_menu(games);
         toolbar.pack_start(games);
 
         auto redo = new ui::Button(0, 0, 100, tb_h, "=>");
@@ -205,6 +150,10 @@ public:
         redo->mouse.click += [=](auto &ev) {
             midend_process_key(fe->me, 0, 0, UI_REDO);
         };
+        games->events.selected += [=](int idx) {
+            select_game(GAME_LIST[idx]);
+        };
+        presets->events.selected += PLS_DELEGATE(select_preset);
 
         // Canvas handlers
         canvas->mouse.down += [=](auto &ev) {
@@ -262,16 +211,17 @@ public:
         ui::MainLoop::redraw();
     }
 
-    void select_preset(game_params * params)
-    {
-        midend_set_params(fe->me, params);
-        start_game();
-    }
-
     void select_game(const game * a_game)
     {
         fe->init_midend(drawer, a_game);
-        presets->init_presets(fe->me);
+        init_presets_menu(presets, fe->me);
+        start_game();
+    }
+
+    void select_preset(int idx)
+    {
+        game_params * params = midend_get_presets(fe->me, NULL)->entries[idx].params;
+        midend_set_params(fe->me, params);
         start_game();
     }
 
@@ -289,6 +239,30 @@ public:
         if (game_over == nullptr)
             game_over = new SimpleMessageDialog(500, 200);
         game_over->show(win ? "You win!" : "Game over");
+    }
+
+    void init_games_menu(ui::TextDropdown * dropdown)
+    {
+        auto section = dropdown->add_section(dropdown->text);
+        std::vector<std::string> names;
+        for (const game * g : GAME_LIST)
+            names.push_back(g->name);
+        section->add_options(names);
+    }
+
+    void init_presets_menu(ui::TextDropdown * dropdown, midend * me)
+    {
+        // reset the dropdown
+        dropdown->scene = NULL;
+        dropdown->options.clear();
+        dropdown->sections.clear();
+        // Fill in preset names
+        auto section = dropdown->add_section(dropdown->text);
+        std::vector<std::string> names;
+        auto menu = midend_get_presets(me, NULL);
+        for (int i = 0; i < menu->n_entries; i++)
+            names.push_back(menu->entries[i].title);
+        section->add_options(names);
     }
 
     void run()
