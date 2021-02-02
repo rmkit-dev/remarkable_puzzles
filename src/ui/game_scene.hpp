@@ -5,6 +5,7 @@
 
 #include <rmkit.h>
 
+#include "mouse.hpp"
 #include "puzzles.hpp"
 #include "timer.hpp"
 #include "ui/canvas.hpp"
@@ -60,6 +61,8 @@ protected:
     void handle_puzzle_key(int key_id);
     void handle_puzzle_key(int x, int y, int key_id);
     void handle_canvas_event(input::SynMotionEvent & evt, int key_id);
+
+    std::shared_ptr<MouseManager> canvas_mouse;
 };
 
 

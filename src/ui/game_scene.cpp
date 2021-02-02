@@ -105,14 +105,23 @@ GameScene::GameScene() : frontend()
         set_params(midend_get_presets(me, NULL)->entries[idx].params);
     };
 
-    // Canvas
-    canvas->mouse.down += [=](auto &ev) {
+    // Canvas mouse events
+    canvas_mouse = std::make_shared<MouseManager>(canvas);
+    canvas_mouse->short_click += [=](auto &ev) {
         handle_canvas_event(ev, LEFT_BUTTON);
-    };
-    canvas->mouse.up += [=](auto &ev) {
         handle_canvas_event(ev, LEFT_RELEASE);
     };
-    canvas->mouse.leave += [=](auto &ev) {
+    canvas_mouse->long_click += [=](auto &ev) {
+        handle_canvas_event(ev, RIGHT_BUTTON);
+        handle_canvas_event(ev, RIGHT_RELEASE);
+    };
+    canvas_mouse->drag_start += [=](auto &ev) {
+        handle_canvas_event(ev, LEFT_BUTTON);
+    };
+    canvas_mouse->dragging += [=](auto &ev) {
+        handle_canvas_event(ev, LEFT_DRAG);
+    };
+    canvas_mouse->drag_end += [=](auto &ev) {
         handle_canvas_event(ev, LEFT_RELEASE);
     };
 }
