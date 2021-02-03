@@ -23,6 +23,11 @@ inline std::string game_colors(const game *g)
     return PUZZLE_DATA + "/" + game_basename(g) + "_colors.conf";
 }
 
+inline std::string game_help(const game *g)
+{
+    return PUZZLE_DATA + "/help/" + game_basename(g) + ".txt";
+}
+
 inline std::string game_save(const game *g)
 {
     return PUZZLE_DATA + "/save/" + game_basename(g) + ".sav";

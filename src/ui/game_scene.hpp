@@ -9,6 +9,7 @@
 #include "puzzles.hpp"
 #include "timer.hpp"
 #include "ui/canvas.hpp"
+#include "ui/help.hpp"
 #include "ui/msg.hpp"
 #include "ui/puzzle_drawer.hpp"
 
@@ -23,6 +24,7 @@ protected:
     ui::TextDropdown * games_menu;
     ui::Button * undo_btn;
     ui::Button * redo_btn;
+    ui::Button * help_btn;
 
     Canvas * canvas;
     ui::Text * status_text;
@@ -30,6 +32,9 @@ protected:
     // Game over dialog
     std::unique_ptr<SimpleMessageDialog> game_over_dlg;
     int last_status = 0;
+
+    // Help dialog
+    std::unique_ptr<HelpDialog> help_dlg;
 
     // Puzzle frontend
     std::unique_ptr<PuzzleDrawer> drawer;

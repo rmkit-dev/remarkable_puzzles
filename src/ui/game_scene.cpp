@@ -79,6 +79,9 @@ GameScene::GameScene() : frontend()
     init_games_menu(games_menu);
     toolbar.pack_start(games_menu);
 
+    help_btn = new ui::Button(0, 0, 100, tb_h, "?");
+    toolbar.pack_end(help_btn);
+
     redo_btn = new ui::Button(0, 0, 100, tb_h, "=>");
     toolbar.pack_end(redo_btn);
 
@@ -98,6 +101,11 @@ GameScene::GameScene() : frontend()
     };
     redo_btn->mouse.click += [=](auto &ev) {
         handle_puzzle_key(UI_REDO);
+    };
+    help_btn->mouse.click += [=](auto &ev) {
+        if (! help_dlg)
+            help_dlg = std::make_unique<HelpDialog>(800, 1200);
+        help_dlg->show(ourgame);
     };
     games_menu->events.selected += [=](int idx) {
         set_game(GAME_LIST[idx]);
