@@ -1,9 +1,12 @@
 #include "config.hpp"
-#include "debug.hpp"
+
 #include <cctype>
 #include <fstream>
 #include <iostream>
 #include <limits>
+
+#include "debug.hpp"
+#include "paths.hpp"
 
 void ignore_comment(std::istream & s)
 {
@@ -21,11 +24,7 @@ void config::color_overrides(const game * g, float * colors, int ncolors)
 {
     // game name without spaces is also how midend_colours() determines what
     // env vars to look at.
-    std::string fname = "/opt/etc/puzzles/";
-    for (const char *c = g->name; *c != '\0'; c++)
-        if (!isspace(*c))
-            fname.push_back(tolower(*c));
-    fname += "_colors.conf";
+    std::string fname = paths::game_colors(g);
     debugf("Reading up to %d colors from %s\n", ncolors, fname.c_str());
     // Read floats from the file
     std::ifstream f(fname);
