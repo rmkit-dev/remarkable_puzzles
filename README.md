@@ -35,10 +35,12 @@ Stop xochitl
 ssh remarkable -t systemctl stop xochitl
 ```
 
-Copy config files
+Make /opt/etc/puzzles directory structure
 
 ```sh
 scp -r config/ remarkable:/opt/etc/puzzles/
+scp -r help/ remarkable:/opt/etc/puzzles/
+ssh remarkable -t mkdir -p /opt/etc/puzzles/save
 ```
 
 Copy the executable and run it
