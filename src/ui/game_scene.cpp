@@ -64,17 +64,17 @@ GameScene::GameScene() : frontend()
     v0.pack_center(canvas);
 
     // Toolbar
-    new_game_btn = new ui::Button(0, 0, 300, tb_h, "New Game");
+    new_game_btn = new ui::Button(0, 0, 276, tb_h, "New Game");
     toolbar.pack_start(new_game_btn);
 
-    restart_btn = new ui::Button(0, 0, 300, tb_h, "Restart");
+    restart_btn = new ui::Button(0, 0, 276, tb_h, "Restart");
     toolbar.pack_start(restart_btn);
 
-    presets_menu = new ui::TextDropdown(0, 0, 300, tb_h, "Presets");
+    presets_menu = new ui::TextDropdown(0, 0, 276, tb_h, "Presets");
     presets_menu->dir = ui::DropdownButton::DOWN;
     toolbar.pack_start(presets_menu);
 
-    games_menu = new ui::TextDropdown(0, 0, 300, tb_h, "Games");
+    games_menu = new ui::TextDropdown(0, 0, 276, tb_h, "Games");
     games_menu->dir = ui::DropdownButton::DOWN;
     init_games_menu(games_menu);
     toolbar.pack_start(games_menu);
