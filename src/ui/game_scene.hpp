@@ -2,6 +2,7 @@
 #define RMP_GAME_SCENE_HPP
 
 #include <memory>
+#include <string>
 
 #include <rmkit.h>
 
@@ -42,8 +43,13 @@ public:
 
     void set_game(const game * a_game);
     void set_params(game_params * params);
-    void start_game();
+    void init_game();
+    void new_game();
     void restart_game();
+    bool load_state(const std::string & filename);
+    bool save_state(const std::string & filename);
+    bool load_state();
+    bool save_state();
 
     void check_timer();
     void check_solved();

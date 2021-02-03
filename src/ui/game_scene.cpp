@@ -1,5 +1,6 @@
 #include "game_scene.hpp"
 
+#include <fstream>
 #include <tuple>
 
 #include <rmkit.h>
@@ -87,7 +88,7 @@ GameScene::GameScene() : frontend()
     // ----- Events -----
     // Toolbar
     new_game_btn->mouse.click += [=](auto &ev) {
-        start_game();
+        new_game();
     };
     restart_btn->mouse.click += [=](auto &ev) {
         restart_game();
@@ -150,8 +151,11 @@ void GameScene::check_solved()
     game_over_dlg->show(win ? "You win!" : "Game over");
 }
 
-void GameScene::start_game()
+void GameScene::init_game()
 {
+    last_status = midend_status(me);
+    init_presets_menu(presets_menu, me);
+
     // Clear the screen
     canvas->drawfb()->clear_screen();
     auto fb = framebuffer::get();
@@ -159,10 +163,6 @@ void GameScene::start_game()
     fb->waveform_mode = WAVEFORM_MODE_INIT;
     fb->redraw_screen(true);
     fb->waveform_mode = WAVEFORM_MODE_DU;
-
-    midend_new_game(me);
-    status_bar("");
-    last_status = 0;
 
     // resize and center the canvas
     int w = canvas->w;
@@ -176,6 +176,14 @@ void GameScene::start_game()
     ui::MainLoop::redraw();
 }
 
+void GameScene::new_game()
+{
+    midend_new_game(me);
+    status_bar("");
+    init_game();
+    save_state();
+}
+
 void GameScene::restart_game()
 {
     midend_restart_game(me);
@@ -183,19 +191,81 @@ void GameScene::restart_game()
     last_status = 0;
     ui::MainLoop::refresh();
     ui::MainLoop::redraw();
+    save_state();
 }
 
 void GameScene::set_game(const game * a_game)
 {
+    save_state();
     init_midend(drawer.get(), a_game);
-    init_presets_menu(presets_menu, me);
-    start_game();
+    if (! load_state())
+        new_game();
 }
 
 void GameScene::set_params(game_params * params)
 {
     midend_set_params(me, params);
-    start_game();
+    new_game();
+}
+
+// Saving / loading
+bool load_state_read(void * fs, void * buf, int len)
+{
+    ifstream * f = static_cast<ifstream *>(fs);
+    if (f) {
+        f->read(static_cast<char*>(buf), len);
+        return f->good();
+    } else {
+        return false;
+    }
+}
+
+void save_state_write(void * fs, const void * buf, int len)
+{
+    ofstream * f = static_cast<ofstream *>(fs);
+    if (f)
+        f->write(static_cast<const char*>(buf), len);
+}
+
+bool GameScene::load_state()
+{
+    return ourgame != NULL && load_state(paths::game_save(ourgame));
+}
+
+bool GameScene::load_state(const std::string & filename)
+{
+    ifstream f(filename);
+    if (f) {
+        const char * err = midend_deserialise(me, &load_state_read, &f);
+        if (err == NULL) {
+            init_game();
+            return true;
+        } else {
+            std::cerr << "Error parsing save file: " << filename << std::endl;
+            std::cerr << err << std::endl;
+            return false;
+        }
+    } else {
+        std::cerr << "Error opening save file for reading: " << filename << std::endl;
+        return false;
+    }
+}
+
+bool GameScene::save_state()
+{
+    return ourgame != NULL && save_state(paths::game_save(ourgame));
+}
+
+bool GameScene::save_state(const std::string & filename)
+{
+    ofstream f(filename);
+    if (f) {
+        midend_serialise(me, &save_state_write, &f);
+        return true;
+    } else {
+        std::cerr << "Error opening save file for writing: " << filename << std::endl;
+        return false;
+    }
 }
 
 // Puzzle frontend

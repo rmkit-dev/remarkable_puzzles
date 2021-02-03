@@ -23,6 +23,11 @@ inline std::string game_colors(const game *g)
     return PUZZLE_DATA + "/" + game_basename(g) + "_colors.conf";
 }
 
+inline std::string game_save(const game *g)
+{
+    return PUZZLE_DATA + "/save/" + game_basename(g) + ".sav";
+}
+
 } // namespace
 
 #endif // RMP_PATHS_HPP
