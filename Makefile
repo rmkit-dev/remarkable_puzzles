@@ -18,8 +18,15 @@ prof: default
 
 
 #### rmkit
-RMKIT_FLAGS = -D"REMARKABLE=1" \
-	-pthread -lpthread
+RMKIT_FLAGS = -pthread -lpthread
+RMKIT_ARCH=
+
+ifeq ($(BUILD),resim)
+	RMKIT_ARCH=dev
+	RMKIT_FLAGS += -DDEV
+else
+	RMKIT_FLAGS += -D"REMARKABLE=1"
+endif
 
 $(BUILD_DIR)/rmkit.h:
 	cd vendor/rmkit && $(MAKE) rmkit.h
@@ -56,10 +63,10 @@ $(MAIN_SRC): $(SRCS)
 	for f in $(SRCS); do echo "#include \"$$f\"" >> $(MAIN_SRC); done
 
 $(MAIN_OBJ): $(BUILD_DIR)/rmkit.h $(MAIN_SRC)
-	$(CXX) $(CXXFLAGS) -c -o $@ $(MAIN_SRC)
+	ARCH=${RMKIT_ARCH} $(CXX) $(CXXFLAGS) -c -o $@ $(MAIN_SRC)
 
 $(BUILD_DIR)/$(TARGET): $(GAME_OBJS) $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $@ $(GAME_OBJS) $(OBJS) $(BUILD_DIR)/$(STB)
+	ARCH=${RMKIT_ARCH} $(CXX) $(CXXFLAGS) -o $@ $(GAME_OBJS) $(OBJS) $(BUILD_DIR)/$(STB)
 
 .PHONY: $(TARGET)
 $(TARGET): $(BUILD_DIR)/$(TARGET)
