@@ -62,9 +62,19 @@ public:
     }
 };
 
-int main()
+#ifdef RMP_ICON_APP
+#include "icons.hpp"
+int main(int argc, char *argv[])
+{
+    IconApp app(argc, argv);
+    app.run();
+    return 0;
+}
+#else
+int main(int argc, char * argv[])
 {
     App app;
     app.run();
     return 0;
 }
+#endif

@@ -1,5 +1,6 @@
 include defs.mk
 
+#### Standard builds
 .PHONY: default all
 default: docker
 all: docker_build release
@@ -15,6 +16,10 @@ debug: default
 .PHONY: prof
 prof: BUILD=prof
 prof: default
+
+.PHONY: puzzle_icons
+puzzle_icons: BUILD=icons
+puzzle_icons: default
 
 
 #### rmkit
