@@ -18,6 +18,21 @@ make debug
 make release
 ```
 
+### Help files
+
+Help files are based on the those from the original puzzle collection, found in
+vendor/puzzles/html/. For expediency and simplicity, the help dialog only shows
+plain text, so these must be converted and edited. Fortunately these help files
+only use a simple subset of html, so most of this can be automated:
+
+```sh
+# Generate text-only help files in help/
+scripts/build-help.sh
+```
+
+Most help files should be hand-edited since the controls are a little different
+(e.g. there is no middle click, and right click is simulated by a long press).
+
 ## Testing
 
 Assuming `remarkable` as an alias in ~/.ssh/config, as per
