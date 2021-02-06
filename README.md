@@ -33,6 +33,17 @@ scripts/build-help.sh
 Most help files should be hand-edited since the controls are a little different
 (e.g. there is no middle click, and right click is simulated by a long press).
 
+### Icons
+
+In the spirit of the original puzzle collection, icons are generated from
+in-progress games. The canonical save files for these icons can be found in
+vendor/puzzles/icons/. There is a separate `puzzle-icons` build that is used to
+generate all icons at once, based on these save files.
+
+```sh
+scripts/build-icons.sh
+```
+
 ## Testing
 
 Assuming `remarkable` as an alias in ~/.ssh/config, as per
