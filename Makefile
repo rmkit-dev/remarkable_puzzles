@@ -79,7 +79,7 @@ DOCKER_MAKEFLAGS=$(if $(shell echo $(firstword $(MAKEFLAGS)) | grep -v '='), -)$
 .PHONY: docker
 docker:
 	docker run \
-		-v "$(PWD):$(PWD)" -w "$(PWD)" \
+		-v "$(CURDIR):$(CURDIR)" -w "$(CURDIR)" \
 		$(DOCKER_ENV) \
 		--rm $(DOCKER_TAG) \
 		make $(TARGET) $(DOCKER_MAKEFLAGS)
