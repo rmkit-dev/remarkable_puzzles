@@ -217,22 +217,19 @@ void GameScene::set_params(game_params * params)
 }
 
 // Saving / loading
-bool load_state_read(void * fs, void * buf, int len)
+bool GameScene::load_state(const std::string & filename)
 {
-    ifstream * f = static_cast<ifstream *>(fs);
-    if (f) {
-        f->read(static_cast<char*>(buf), len);
-        return f->good();
+    if (load_from_file(filename)) {
+        init_game();
+        return true;
     } else {
         return false;
     }
 }
 
-void save_state_write(void * fs, const void * buf, int len)
+bool GameScene::save_state(const std::string & filename)
 {
-    ofstream * f = static_cast<ofstream *>(fs);
-    if (f)
-        f->write(static_cast<const char*>(buf), len);
+    return save_to_file(filename);
 }
 
 bool GameScene::load_state()
@@ -240,40 +237,9 @@ bool GameScene::load_state()
     return ourgame != NULL && load_state(paths::game_save(ourgame));
 }
 
-bool GameScene::load_state(const std::string & filename)
-{
-    ifstream f(filename);
-    if (f) {
-        const char * err = midend_deserialise(me, &load_state_read, &f);
-        if (err == NULL) {
-            init_game();
-            return true;
-        } else {
-            std::cerr << "Error parsing save file: " << filename << std::endl;
-            std::cerr << err << std::endl;
-            return false;
-        }
-    } else {
-        std::cerr << "Error opening save file for reading: " << filename << std::endl;
-        return false;
-    }
-}
-
 bool GameScene::save_state()
 {
     return ourgame != NULL && save_state(paths::game_save(ourgame));
-}
-
-bool GameScene::save_state(const std::string & filename)
-{
-    ofstream f(filename);
-    if (f) {
-        midend_serialise(me, &save_state_write, &f);
-        return true;
-    } else {
-        std::cerr << "Error opening save file for writing: " << filename << std::endl;
-        return false;
-    }
 }
 
 // Puzzle frontend

@@ -11,6 +11,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <string>
 #include <sys/time.h>
 
 #include "debug.hpp"
@@ -52,6 +53,8 @@ public:
     }
 
     virtual void init_midend(DrawingApi * drawer, const game *ourgame);
+    bool load_from_file(const std::string & filename);
+    bool save_to_file(const std::string & filename);
 
     // -- Midend functions --
     virtual void frontend_default_colour(float *output)

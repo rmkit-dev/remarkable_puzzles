@@ -2,6 +2,8 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <fstream>
+#include <iostream>
 #include <sys/time.h>
 
 #include "puzzles.hpp"
@@ -53,6 +55,44 @@ void frontend::init_midend(DrawingApi * drawer, const game *ourgame)
     me = midend_new(this, ourgame, &cpp_drawing_api, drawer);
     drawer->set_frontend(this);
     drawer->update_colors();
+}
+
+bool frontend::load_from_file(const std::string & filename)
+{
+    ifstream f(filename);
+    if (!f) {
+        std::cerr << "Error opening save file for reading: " << filename << std::endl;
+        return false;
+    }
+    auto write_fn = [](void * fs, void * buf, int len) {
+        ifstream * f = static_cast<ifstream *>(fs);
+        f->read(static_cast<char*>(buf), len);
+        return f->good();
+    };
+    const char * err = midend_deserialise(me, write_fn, &f);
+    if (err == NULL) {
+        return true;
+    } else {
+        std::cerr << "Error parsing save file: " << filename << std::endl;
+        std::cerr << err << std::endl;
+        return false;
+    }
+}
+
+bool frontend::save_to_file(const std::string & filename)
+{
+    ofstream f(filename);
+    if (!f) {
+        std::cerr << "Error opening save file for writing: " << filename << std::endl;
+        return false;
+    }
+    auto write_fn = [](void * fs, const void * buf, int len) {
+        ofstream * f = static_cast<ofstream *>(fs);
+        if (f)
+            f->write(static_cast<const char*>(buf), len);
+    };
+    midend_serialise(me, write_fn, &f);
+    return f.good();
 }
 
 
