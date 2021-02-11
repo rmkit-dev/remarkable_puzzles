@@ -41,10 +41,8 @@ class DrawingApi;
 class frontend
 {
 public:
-    midend *me;
-    const game * ourgame;
-
-    frontend() : me(NULL) { }
+    midend *me = NULL;
+    const game * ourgame = NULL;
 
     virtual ~frontend()
     {
