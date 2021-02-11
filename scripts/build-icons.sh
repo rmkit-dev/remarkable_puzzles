@@ -11,8 +11,8 @@ scp vendor/puzzles/icons/*.sav remarkable:/opt/etc/puzzle-icons/
 scp build/icons/puzzles remarkable:/opt/bin/puzzle-icons
 ssh remarkable -t /opt/bin/rm2fb-client /opt/bin/puzzle-icons 300
 
-# Copy icons from remarkable, center them, and save to icons/
 scp 'remarkable:/opt/etc/puzzle-icons/*.png' build/icons/
 mkdir -p icons
+# Trim the white border and convert to grayscale
 find build/icons/ -name '*.png' -exec sh -c \
-  'convert "$0" -gravity center -background white -extent 300x300 icons/$(basename "$0")' {} \;
+  'convert "$0" -trim -colorspace Gray icons/$(basename "$0")' {} \;
