@@ -20,7 +20,7 @@ inline std::string game_basename(const game *g)
 
 inline std::string game_colors(const game *g)
 {
-    return PUZZLE_DATA + "/" + game_basename(g) + "_colors.conf";
+    return PUZZLE_DATA + "/config/" + game_basename(g) + "_colors.conf";
 }
 
 inline std::string game_help(const game *g)
