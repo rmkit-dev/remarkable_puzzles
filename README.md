@@ -64,9 +64,10 @@ ssh remarkable -t systemctl stop xochitl
 Make /opt/etc/puzzles directory structure
 
 ```sh
+ssh remarkable -t mkdir -p /opt/etc/puzzles/save
 scp -r config/ remarkable:/opt/etc/puzzles/
 scp -r help/ remarkable:/opt/etc/puzzles/
-ssh remarkable -t mkdir -p /opt/etc/puzzles/save
+scp -r icons/ remarkable:/opt/etc/puzzles/
 ```
 
 Copy the executable and run it
