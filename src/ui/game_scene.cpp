@@ -30,15 +30,6 @@ void init_presets_menu(ui::TextDropdown * presets_menu, midend * me)
     section->add_options(names);
 }
 
-void init_games_menu(ui::TextDropdown * games_menu)
-{
-    auto section = games_menu->add_section(games_menu->text);
-    std::vector<std::string> names;
-    for (const game * g : GAME_LIST)
-        names.push_back(g->name);
-    section->add_options(names);
-}
-
 GameScene::GameScene() : frontend()
 {
     scene = ui::make_scene();
@@ -64,6 +55,9 @@ GameScene::GameScene() : frontend()
     v0.pack_center(canvas);
 
     // Toolbar
+    back_btn = new ui::Button(0, 0, 276, tb_h, "< All Games");
+    toolbar.pack_start(back_btn);
+
     new_game_btn = new ui::Button(0, 0, 276, tb_h, "New Game");
     toolbar.pack_start(new_game_btn);
 
@@ -73,11 +67,6 @@ GameScene::GameScene() : frontend()
     presets_menu = new ui::TextDropdown(0, 0, 276, tb_h, "Presets");
     presets_menu->dir = ui::DropdownButton::DOWN;
     toolbar.pack_start(presets_menu);
-
-    games_menu = new ui::TextDropdown(0, 0, 276, tb_h, "Games");
-    games_menu->dir = ui::DropdownButton::DOWN;
-    init_games_menu(games_menu);
-    toolbar.pack_start(games_menu);
 
     help_btn = new ui::Button(0, 0, 100, tb_h, "?");
     toolbar.pack_end(help_btn);
@@ -90,6 +79,9 @@ GameScene::GameScene() : frontend()
 
     // ----- Events -----
     // Toolbar
+    back_btn->mouse.click += [=](auto &ev) {
+        this->back_click(ev); // App handles this
+    };
     new_game_btn->mouse.click += [=](auto &ev) {
         new_game();
     };
@@ -106,9 +98,6 @@ GameScene::GameScene() : frontend()
         if (! help_dlg)
             help_dlg = std::make_unique<HelpDialog>(800, 1200);
         help_dlg->show(ourgame);
-    };
-    games_menu->events.selected += [=](int idx) {
-        set_game(GAME_LIST[idx]);
     };
     presets_menu->events.selected += [=](int idx) {
         set_params(midend_get_presets(me, NULL)->entries[idx].params);

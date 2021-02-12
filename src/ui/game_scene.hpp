@@ -21,7 +21,7 @@ protected:
     ui::Button * new_game_btn;
     ui::Button * restart_btn;
     ui::TextDropdown * presets_menu;
-    ui::TextDropdown * games_menu;
+    ui::Button * back_btn;
     ui::Button * undo_btn;
     ui::Button * redo_btn;
     ui::Button * help_btn;
@@ -44,7 +44,14 @@ protected:
 public:
     GameScene();
 
-    void show() { ui::MainLoop::set_scene(scene); }
+    ui::MOUSE_EVENT back_click;
+
+    void show()
+    {
+        ui::MainLoop::set_scene(scene);
+        ui::MainLoop::full_refresh();
+    }
+    bool is_shown() { return scene == ui::MainLoop::scene; }
 
     void set_game(const game * a_game);
     void set_params(game_params * params);
