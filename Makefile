@@ -21,6 +21,12 @@ prof: default
 puzzle_icons: BUILD=icons
 puzzle_icons: default
 
+.PHONY: resim
+resim: BUILD=resim
+resim: ARCH=dev
+resim: default
+
+
 
 #### rmkit
 RMKIT_FLAGS = -D"REMARKABLE=1" \

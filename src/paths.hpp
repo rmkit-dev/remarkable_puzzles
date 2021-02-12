@@ -7,7 +7,11 @@
 
 namespace paths {
 
+#ifdef RESIM
+const std::string PUZZLE_DATA = ".";
+#else
 const std::string PUZZLE_DATA = "/opt/etc/puzzles";
+#endif
 
 inline std::string game_basename(const game *g)
 {

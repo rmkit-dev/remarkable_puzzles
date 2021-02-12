@@ -30,6 +30,8 @@ else ifeq ($(BUILD),prof)
 	BUILD_FLAGS = -g -pg -O2 -DNDEBUG
 else ifeq ($(BUILD),icons)
 	BUILD_FLAGS = -DNDEBUG -DRMP_ICON_APP
+else ifeq ($(BUILD),resim)
+	BUILD_FLAGS = -g -UREMARKABLE -DDEV -DRESIM
 else
 	# release
 	BUILD_FLAGS = -O2 -DNDEBUG
