@@ -1,13 +1,13 @@
 #ifndef RMP_GAME_SCENE_HPP
 #define RMP_GAME_SCENE_HPP
 
+#include <chrono>
 #include <memory>
 #include <string>
 
 #include <rmkit.h>
 
 #include "puzzles.hpp"
-#include "timer.hpp"
 #include "ui/canvas.hpp"
 #include "ui/help.hpp"
 #include "ui/msg.hpp"
@@ -38,8 +38,8 @@ protected:
 
     // Puzzle frontend
     std::unique_ptr<PuzzleDrawer> drawer;
-    double timer_prev = 0.0;
-    bool timer_active = false;
+    std::chrono::high_resolution_clock::time_point timer_prev;
+    TimerPtr game_timer;
 
 public:
     GameScene();
@@ -63,9 +63,7 @@ public:
     bool load_state();
     bool save_state();
 
-    void check_timer();
     void check_solved();
-    bool wants_timer() { return timer_active; }
 
     // Puzzle frontend implementation
     void frontend_default_colour(float *output);

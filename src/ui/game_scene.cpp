@@ -1,5 +1,6 @@
 #include "game_scene.hpp"
 
+#include <chrono>
 #include <fstream>
 #include <tuple>
 
@@ -7,8 +8,9 @@
 
 #include "debug.hpp"
 #include "game_list.hpp"
-#include "timer.hpp"
 #include "ui/msg.hpp"
+
+constexpr int TIMER_INTERVAL = 100;
 
 void init_presets_menu(ui::TextDropdown * presets_menu, midend * me)
 {
@@ -133,8 +135,7 @@ void GameScene::handle_puzzle_key(int x, int y, int key_id)
 
 void GameScene::check_solved()
 {
-    if (timer_active)
-        return;
+    if (game_timer) return;
     int status = midend_status(me);
     if (status == last_status)
         return;
@@ -142,10 +143,16 @@ void GameScene::check_solved()
     if (status == 0) // 0 = game still in progress
         return;
     // show the game over dialog
+    // On rm2 there seems to be an occasional race where the dialog is
+    // dismissed before it actually appears on screen. I'm not sure if it's an
+    // error on my part, or if it has to do w/ rm2fb being asynchronous. In any
+    // case, giving this a slight delay seems to help.
     bool win = status > 0;
-    if (!game_over_dlg)
-        game_over_dlg = std::make_unique<SimpleMessageDialog>(500, 200);
-    game_over_dlg->show(win ? "You win!" : "Game over");
+    ui::MainLoop::set_timeout([=]() {
+        if (!game_over_dlg)
+            game_over_dlg = std::make_unique<SimpleMessageDialog>(500, 200);
+        game_over_dlg->show(win ? "You win!" : "Game over");
+    }, 50);
 }
 
 void GameScene::init_game()
@@ -232,17 +239,6 @@ bool GameScene::save_state()
 }
 
 // Puzzle frontend
-void GameScene::check_timer()
-{
-    if (timer_active) {
-        double now = timer::now();
-        if ((now - timer_prev) > timer::INTERVAL_S) {
-            midend_timer(me, (float)(now - timer_prev));
-            timer_prev = now;
-        }
-    }
-}
-
 void GameScene::frontend_default_colour(float *output)
 {
     output[0] = output[1] = output[2] = 1.f;
@@ -250,13 +246,28 @@ void GameScene::frontend_default_colour(float *output)
 
 void GameScene::activate_timer()
 {
-    timer_prev = timer::now();
-    timer_active = true;
+    if (game_timer) return;
+    timer_prev = std::chrono::high_resolution_clock::now();
+    game_timer = ui::MainLoop::set_interval([=]() {
+        auto now = std::chrono::high_resolution_clock::now();
+        auto time_diff = now - timer_prev;
+        timer_prev = now;
+        midend_timer(me, std::chrono::duration<float>(time_diff).count());
+        // TODO: this shouldn't be necessary, but at least in rm2 this seems to
+        // help get the screen to actually flash
+        if (midend_status(me) != 0)
+            scene->refresh();
+    }, TIMER_INTERVAL);
 }
 
 void GameScene::deactivate_timer()
 {
-    timer_active = false;
+    if (game_timer) {
+        ui::MainLoop::cancel_timer(game_timer);
+        game_timer = nullptr;
+        if (is_shown())
+            check_solved();
+    }
 }
 
 void GameScene::status_bar(const char *text)

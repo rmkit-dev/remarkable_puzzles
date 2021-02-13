@@ -9,13 +9,13 @@
 #include "ui/chooser_scene.hpp"
 #include "ui/game_scene.hpp"
 
-const double AUTO_SAVE_INTERVAL_S = 2.0;
+const int AUTO_SAVE_INTERVAL = 2000;
 
 class App {
 public:
     std::shared_ptr<GameScene> game_scene;
     std::shared_ptr<ChooserScene> chooser_scene;
-    double last_save = 0.0;
+    TimerPtr auto_save_timer;
     bool wants_auto_save = true;
 
     App()
@@ -40,44 +40,35 @@ public:
         if (!game_scene) {
             game_scene = std::make_shared<GameScene>();
             game_scene->back_click += [=](auto & ev) {
+                // stop timers
+                game_scene->deactivate_timer();
+                ui::MainLoop::cancel_timer(auto_save_timer);
+                auto_save_timer = nullptr;
+                // switch scene
                 chooser_scene->show();
             };
         }
         game_scene->set_game(&g);
-        game_scene->show();
-    }
-
-    void check_auto_save()
-    {
-        // set wants_auto_save after every input event, assuming it might have
-        // changed the game's state
-        wants_auto_save = wants_auto_save || !ui::MainLoop::in.all_motion_events.empty();
-        if (wants_auto_save && timer::now() - last_save > AUTO_SAVE_INTERVAL_S) {
-            if (game_scene->save_state()) {
-                last_save = timer::now();
+        auto_save_timer = ui::MainLoop::set_interval([=]() {
+            if (wants_auto_save && game_scene) {
+                game_scene->save_state();
                 std::cerr << "auto save" << std::endl;
+                wants_auto_save = false;
             }
-            wants_auto_save = false;
-        }
+        }, AUTO_SAVE_INTERVAL);
+        game_scene->show();
     }
 
     void run()
     {
         while (1) {
-            int input_timeout = 0;
-            if (game_scene && game_scene->is_shown()) {
-                check_auto_save();
-                game_scene->check_timer();
-                game_scene->check_solved();
-                if (game_scene->wants_timer())
-                    input_timeout = timer::INTERVAL_MS;
-                else if (wants_auto_save)
-                    input_timeout = AUTO_SAVE_INTERVAL_S * 1000;
-            }
             // Process events and redraw
             ui::MainLoop::main();
             ui::MainLoop::redraw();
-            ui::MainLoop::read_input(input_timeout);
+            ui::MainLoop::read_input();
+            // only set wants_auto_save if we got any input, since otherwise
+            // the game state couldn't have changed
+            wants_auto_save = wants_auto_save || !ui::MainLoop::in.all_motion_events.empty();
         }
     }
 };
