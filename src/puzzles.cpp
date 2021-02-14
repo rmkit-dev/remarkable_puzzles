@@ -59,13 +59,13 @@ void frontend::init_midend(DrawingApi * drawer, const game *ourgame)
 
 bool frontend::load_from_file(const std::string & filename)
 {
-    ifstream f(filename);
+    std::ifstream f(filename);
     if (!f) {
         std::cerr << "Error opening save file for reading: " << filename << std::endl;
         return false;
     }
     auto write_fn = [](void * fs, void * buf, int len) {
-        ifstream * f = static_cast<ifstream *>(fs);
+        std::ifstream * f = static_cast<std::ifstream *>(fs);
         f->read(static_cast<char*>(buf), len);
         return f->good();
     };
@@ -81,13 +81,13 @@ bool frontend::load_from_file(const std::string & filename)
 
 bool frontend::save_to_file(const std::string & filename)
 {
-    ofstream f(filename);
+    std::ofstream f(filename);
     if (!f) {
         std::cerr << "Error opening save file for writing: " << filename << std::endl;
         return false;
     }
     auto write_fn = [](void * fs, const void * buf, int len) {
-        ofstream * f = static_cast<ofstream *>(fs);
+        std::ofstream * f = static_cast<std::ofstream *>(fs);
         if (f)
             f->write(static_cast<const char*>(buf), len);
     };
