@@ -5,7 +5,6 @@
 
 #include "game_list.hpp"
 #include "puzzles.hpp"
-#include "timer.hpp"
 #include "ui/chooser_scene.hpp"
 #include "ui/game_scene.hpp"
 
