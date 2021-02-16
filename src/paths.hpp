@@ -15,11 +15,9 @@ const std::string PUZZLE_DATA = "/opt/etc/puzzles";
 
 inline std::string game_basename(const game *g)
 {
-    std::string ret;
-    for (const char *c = g->name; *c != '\0'; c++)
-        if (!isspace(*c))
-            ret.push_back(tolower(*c));
-    return ret;
+    // this seems to be the field with the most "standard" version of the
+    // game's name (i.e. the same name as the c file)
+    return g->htmlhelp_topic;
 }
 
 inline std::string game_colors(const game *g)
