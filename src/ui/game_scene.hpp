@@ -39,7 +39,7 @@ protected:
     // Puzzle frontend
     std::unique_ptr<PuzzleDrawer> drawer;
     std::chrono::high_resolution_clock::time_point timer_prev;
-    TimerPtr game_timer;
+    ui::TimerPtr game_timer;
 
 public:
     GameScene();

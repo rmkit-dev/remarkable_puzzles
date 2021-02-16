@@ -148,7 +148,7 @@ void GameScene::check_solved()
     // error on my part, or if it has to do w/ rm2fb being asynchronous. In any
     // case, giving this a slight delay seems to help.
     bool win = status > 0;
-    ui::MainLoop::set_timeout([=]() {
+    ui::set_timeout([=]() {
         if (!game_over_dlg)
             game_over_dlg = std::make_unique<SimpleMessageDialog>(500, 200);
         game_over_dlg->show(win ? "You win!" : "Game over");
@@ -248,7 +248,7 @@ void GameScene::activate_timer()
 {
     if (game_timer) return;
     timer_prev = std::chrono::high_resolution_clock::now();
-    game_timer = ui::MainLoop::set_interval([=]() {
+    game_timer = ui::set_interval([=]() {
         auto now = std::chrono::high_resolution_clock::now();
         auto time_diff = now - timer_prev;
         timer_prev = now;
@@ -263,7 +263,7 @@ void GameScene::activate_timer()
 void GameScene::deactivate_timer()
 {
     if (game_timer) {
-        ui::MainLoop::cancel_timer(game_timer);
+        ui::cancel_timer(game_timer);
         game_timer = nullptr;
         if (is_shown())
             check_solved();

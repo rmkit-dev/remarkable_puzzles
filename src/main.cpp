@@ -14,7 +14,7 @@ class App {
 public:
     std::shared_ptr<GameScene> game_scene;
     std::shared_ptr<ChooserScene> chooser_scene;
-    TimerPtr auto_save_timer;
+    ui::TimerPtr auto_save_timer;
     bool wants_auto_save = true;
 
     App()
@@ -41,14 +41,14 @@ public:
             game_scene->back_click += [=](auto & ev) {
                 // stop timers
                 game_scene->deactivate_timer();
-                ui::MainLoop::cancel_timer(auto_save_timer);
+                ui::cancel_timer(auto_save_timer);
                 auto_save_timer = nullptr;
                 // switch scene
                 chooser_scene->show();
             };
         }
         game_scene->set_game(&g);
-        auto_save_timer = ui::MainLoop::set_interval([=]() {
+        auto_save_timer = ui::set_interval([=]() {
             if (wants_auto_save && game_scene) {
                 game_scene->save_state();
                 std::cerr << "auto save" << std::endl;
