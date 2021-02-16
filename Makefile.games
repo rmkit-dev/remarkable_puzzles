@@ -51,14 +51,22 @@ GAMES += tracks
 # GAMES += undead
 # GAMES += unequal
 GAMES += unruly
-GAMES += untangle
+GAMES += untangle.patched
 
 GAME_FILES = $(GAMES) $(GAME_COMMON) $(GAME_EXTRA)
 GAME_SRCS = $(GAME_FILES:%=%.c)
 GAME_OBJS = $(addprefix $(BUILD_DIR)/vendor/puzzles/, $(GAME_SRCS:.c=.o))
 
-$(GAME_OBJS): $(BUILD_DIR)/%.o : %.c
+# Games with patches
+$(filter %.patched.o,$(GAME_OBJS)): $(BUILD_DIR)/%.patched.o : %.c patches/%.patch
+	mkdir -p $(dir $@)
+	patch -o $(BUILD_DIR)/$< $^
+	$(CC) $(GAME_CFLAGS) -c -o $@ $(BUILD_DIR)/$<
+
+# Games without patches
+$(filter-out %.patched.o,$(GAME_OBJS)): $(BUILD_DIR)/%.o : %.c
 	mkdir -p $(dir $@)
 	$(CC) $(GAME_CFLAGS) -c -o $@ $^
+
 
 games: $(GAME_OBJS)

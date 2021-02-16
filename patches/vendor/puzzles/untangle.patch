@@ -1,0 +1,16 @@
+diff --git a/untangle.c b/untangle.c
+index df30e1d..e1a3596 100644
+--- a/untangle.c
++++ b/untangle.c
+@@ -36,7 +36,11 @@
+ #include "puzzles.h"
+ #include "tree234.h"
+ 
++#ifdef RMP_ICON_APP
+ #define CIRCLE_RADIUS 6
++#else
++#define CIRCLE_RADIUS 20
++#endif
+ #define DRAG_THRESHOLD (CIRCLE_RADIUS * 2)
+ #define PREFERRED_TILESIZE 64
+ 
