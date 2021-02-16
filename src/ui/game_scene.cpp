@@ -223,6 +223,7 @@ void GameScene::set_params(game_params * params)
 // Saving / loading
 bool GameScene::load_state(const std::string & filename)
 {
+    status_bar("");
     if (load_from_file(filename)) {
         init_game();
         return true;
