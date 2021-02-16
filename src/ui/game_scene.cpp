@@ -106,13 +106,21 @@ GameScene::GameScene() : frontend()
     };
 
     // Canvas
-    canvas->mouse.down += [=](auto &ev) {
+    canvas->gestures.single_click += [=](auto &ev) {
         handle_canvas_event(ev, LEFT_BUTTON);
-    };
-    canvas->mouse.up += [=](auto &ev) {
         handle_canvas_event(ev, LEFT_RELEASE);
     };
-    canvas->mouse.leave += [=](auto &ev) {
+    canvas->gestures.long_press += [=](auto &ev) {
+        handle_canvas_event(ev, RIGHT_BUTTON);
+        handle_canvas_event(ev, RIGHT_RELEASE);
+    };
+    canvas->gestures.drag_start += [=](auto &ev) {
+        handle_canvas_event(ev, LEFT_BUTTON);
+    };
+    canvas->gestures.dragging += [=](auto &ev) {
+        handle_canvas_event(ev, LEFT_DRAG);
+    };
+    canvas->gestures.drag_end += [=](auto &ev) {
         handle_canvas_event(ev, LEFT_RELEASE);
     };
 }
