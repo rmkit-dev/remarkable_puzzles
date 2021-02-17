@@ -33,6 +33,10 @@ Layer::~Layer()
 
 void Layer::clip(int x, int y, int w, int h)
 {
+    x = std::min(fb->width  - 1, std::max(x, 0));
+    y = std::min(fb->height - 1, std::max(y, 0));
+    w = std::min(fb->width  - x, std::max(w, 0));
+    h = std::min(fb->height - y, std::max(h, 0));
     // TODO: allocating an entire fb for clipping is very inefficient; it would
     // be nice to add clipping as a framebuffer concept.
     if (clipfb == NULL)
