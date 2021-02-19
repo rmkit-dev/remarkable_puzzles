@@ -17,12 +17,22 @@ PERL_SCRIPT='
     s#\s*<p>\s*#\n\n#g;
 '
 
-for f in vendor/puzzles/html/*.html; do
-    outf="help/$(basename "${f%%.html}").txt"
-    if [[ -f "$outf" ]]; then
-        echo "$outf already exists; skipping"
-    else
-        echo "converting $f -> $outf"
-        perl -0777 -pe "$PERL_SCRIPT" "$f" > "$outf"
-    fi
-done
+build_1() {
+  outf="help/$(basename "${1%%.html}").txt"
+  if [[ -f "$outf" ]]; then
+      echo "$outf already exists; skipping"
+  else
+      echo "converting $1 -> $outf"
+      perl -0777 -pe "$PERL_SCRIPT" "$1" > "$outf"
+  fi
+}
+
+if [[ -n "$1" ]]; then
+  for f in "$@"; do
+    build_1 "vendor/puzzles/html/$f.html"
+  done
+else
+  for f in vendor/puzzles/html/*.html; do
+    build_1 "$f"
+  done
+fi
