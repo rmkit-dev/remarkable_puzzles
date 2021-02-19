@@ -1,51 +1,61 @@
 #include "config.hpp"
 
-#include <cctype>
+#include <cstdlib>
 #include <fstream>
 #include <iostream>
-#include <limits>
+#include <map>
+#include <string>
 
-#include "debug.hpp"
+// INI library (and source since it's only used in this file)
+#define INI_INLINE_COMMENT_PREFIXES ";#"
+#include "ini.h"
+#include "ini.c"
+
+#include "puzzles.hpp"
 #include "paths.hpp"
 
-void ignore_comment(std::istream & s)
-{
-    for(;;) {
-        while (isspace(s.peek()))
-            s.ignore();
-        if (s.peek() == '#')
-            s.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        else
-            break;
-    }
-}
+struct Parser {
+    Config * cfg;
+    std::map<std::string, int> color_order;
+};
 
-void config::color_overrides(const game * g, float * colors, int ncolors)
+int handler(void* user, const char* section, const char* name, const char* value)
 {
-    // game name without spaces is also how midend_colours() determines what
-    // env vars to look at.
-    std::string fname = paths::game_colors(g);
-    debugf("Reading up to %d colors from %s\n", ncolors, fname.c_str());
-    // Read floats from the file
-    std::ifstream f(fname);
-    float color;
-    int i;
-    for (i = 0; i < ncolors; i++) {
-        ignore_comment(f);
-        // Read floats
-        if (!(f >> color))
-            break;
-        debugf("Color %d: %f\n", i, color);
-        colors[3*i+0] = color;
-        colors[3*i+1] = color;
-        colors[3*i+2] = color;
+    Parser *p = static_cast<Parser*>(user);
+    if (strcmp(section, "colors") == 0) {
+        if (strcmp(name, "_order") == 0) {
+            // colors._order is a space separated list
+            stringstream ss(value);
+            std::string label;
+            int i = 0;
+            while (ss >> label)
+                p->color_order[label] = i++;
+            p->cfg->colors.resize(p->color_order.size(), -1.0);
+        } else if (p->color_order.count(name) != 0) {
+            p->cfg->colors[p->color_order[name]] = std::atof(value);
+            debugf("color [%d] %s = %f\n", p->color_order[name], name, std::atof(value));
+        } else {
+            std::cerr << "unexpected key: " << section << "." << name << std::endl;
+            return 0;
+        }
+    } else {
+        std::cerr << "unexpected key: " << section << "." << name << std::endl;
+        return 0;
     }
-    ignore_comment(f); // eat any remaining comments for error checking
-    if (i < ncolors) {
-        std::cerr << "Read " << i << "/" << ncolors << " colors"
-            " from " << fname << std::endl;
-    } else if (! f.eof()) {
-        std::cerr << "End of file not reached after " << i << " colors"
-            << " while reading " << fname << std::endl;
+    return 1; // success
+};
+
+Config Config::from_game(const game * g)
+{
+    Config ret;
+    Parser p { &ret };
+    std::string fname = paths::game_config(g);
+    int err = ini_parse(fname.c_str(), handler, &p);
+    if (err < 0) {
+        std::cerr << "Error opening file: " << fname << std::endl;
+    } else if (err > 0) {
+        std::cerr << "Error reading file: " << fname << " on line " << err << std::endl;
     }
+    // return a partial result even if there were errors
+    return ret;
 }

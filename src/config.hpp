@@ -1,12 +1,14 @@
 #ifndef RMP_CONFIG_HPP
 #define RMP_CONFIG_HPP
 
-#include "puzzles.hpp"
+#include <vector>
 
-namespace config {
+struct game;
 
-void color_overrides(const game * g, float * colors, int ncolors);
+struct Config {
+    std::vector<float> colors; // unset colors are -1
 
+    static Config from_game(const game * g);
 };
 
 #endif // RMP_CONFIG_HPP

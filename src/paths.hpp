@@ -20,9 +20,9 @@ inline std::string game_basename(const game *g)
     return g->htmlhelp_topic;
 }
 
-inline std::string game_colors(const game *g)
+inline std::string game_config(const game *g)
 {
-    return PUZZLE_DATA + "/config/" + game_basename(g) + "_colors.conf";
+    return PUZZLE_DATA + "/config/" + game_basename(g) + ".ini";
 }
 
 inline std::string game_help(const game *g)

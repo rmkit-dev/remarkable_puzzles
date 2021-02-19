@@ -13,13 +13,6 @@ remarkable_color PuzzleDrawer::rm_color(int idx)
     return ((r & 0b11111000) << 8) | ((g & 0b11111100) << 3) | (b >> 3);
 }
 
-void PuzzleDrawer::update_colors()
-{
-    DrawingApi::update_colors();
-    config::color_overrides(fe->ourgame, colors, ncolors);
-}
-
-
 void PuzzleDrawer::draw_text(int x, int y, int fonttype,
                              int fontsize, int align, int colour,
                              const char *text)

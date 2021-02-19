@@ -4,3 +4,6 @@
 [submodule "vendor/rmkit"]
 	path = vendor/rmkit
 	url = git@github.com:rmkit-dev/rmkit.git
+[submodule "vendor/inih"]
+	path = vendor/inih
+	url = https://github.com/benhoyt/inih

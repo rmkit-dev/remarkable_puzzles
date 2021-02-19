@@ -14,6 +14,7 @@
 #include <string>
 #include <sys/time.h>
 
+#include "config.hpp"
 #include "debug.hpp"
 
 // Some acrobatics since puzzles.h defines its own min and max macros which
@@ -43,6 +44,7 @@ class frontend
 public:
     midend *me = NULL;
     const game * ourgame = NULL;
+    Config config;
 
     virtual ~frontend()
     {

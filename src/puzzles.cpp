@@ -7,6 +7,7 @@
 #include <sys/time.h>
 
 #include "puzzles.hpp"
+#include "config.hpp"
 
 // === Debug ===
 
@@ -52,6 +53,7 @@ void frontend::init_midend(DrawingApi * drawer, const game *ourgame)
     if (me != NULL)
         midend_free(me);
     this->ourgame = ourgame;
+    config = Config::from_game(ourgame);
     me = midend_new(this, ourgame, &cpp_drawing_api, drawer);
     drawer->set_frontend(this);
     drawer->update_colors();
@@ -155,9 +157,20 @@ void activate_timer(frontend *fe)
 
 void DrawingApi::update_colors()
 {
+    // load colors from midend
     if (colors != nullptr)
         sfree(colors);
     colors = midend_colours(fe->me, &ncolors);
+    // overwrite with colors from the config file
+    const std::vector<float> & cfg_colors = fe->config.colors;
+    if (!cfg_colors.empty()) {
+        for (int i = 0; i < std::min<int>(ncolors, cfg_colors.size()); i++) {
+            if (cfg_colors[i] < 0.0) continue;
+            colors[3*i+0] = cfg_colors[i];
+            colors[3*i+1] = cfg_colors[i];
+            colors[3*i+2] = cfg_colors[i];
+        }
+    }
 }
 
 void cpp_draw_text(void *handle, int x, int y, int fonttype,

@@ -50,7 +50,7 @@ TARGET = puzzles
 SRCS   = $(shell find src/ -type f -name '*.cpp')
 OBJS   = $(addprefix $(BUILD_DIR)/, $(SRCS:.cpp=.o))
 
-INCLUDES  = -I./ -Isrc/
+INCLUDES  = -I./ -Isrc/ -Ivendor/inih
 # rmkit produces a lot of warnings; making it a "system" header disables those
 INCLUDES += -isystem $(BUILD_DIR)/
 
