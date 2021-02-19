@@ -123,6 +123,15 @@ GameScene::GameScene() : frontend()
     canvas->gestures.drag_end += [=](auto &ev) {
         handle_canvas_event(ev, LEFT_RELEASE);
     };
+
+#ifndef NDEBUG
+    auto reload_btn = new ui::Button(w - 50, h - 50, 50, 50, "R");
+    scene->add(reload_btn);
+    reload_btn->mouse.click += [=](auto &ev) {
+        debugf("reloading config\n");
+        set_game(ourgame);
+    };
+#endif
 }
 
 void GameScene::handle_canvas_event(input::SynMotionEvent & ev, int key_id)
