@@ -1,5 +1,6 @@
 #include "config.hpp"
 
+#include <algorithm>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
@@ -22,7 +23,18 @@ struct Parser {
 int handler(void* user, const char* section, const char* name, const char* value)
 {
     Parser *p = static_cast<Parser*>(user);
-    if (strcmp(section, "colors") == 0) {
+    if (strcmp(section, "layout") == 0) {
+        if (strcmp(name, "min_tilesize") == 0) {
+            p->cfg->min_tilesize = std::atoi(value);
+        } else if (strcmp(name, "max_tilesize") == 0) {
+            p->cfg->max_tilesize = std::atoi(value);
+        } else if (strcmp(name, "fullscreen") == 0) {
+            p->cfg->fullscreen = strcmp(value, "true") == 0;
+        } else {
+            std::cerr << "unexpected key: " << section << "." << name << std::endl;
+            return 0;
+        }
+    } else if (strcmp(section, "colors") == 0) {
         if (strcmp(name, "_order") == 0) {
             // colors._order is a space separated list
             stringstream ss(value);
@@ -56,6 +68,9 @@ Config Config::from_game(const game * g)
     } else if (err > 0) {
         std::cerr << "Error reading file: " << fname << " on line " << err << std::endl;
     }
+    // tilesize invariant
+    if (ret.min_tilesize > ret.max_tilesize)
+        std::swap(ret.min_tilesize, ret.max_tilesize);
     // return a partial result even if there were errors
     return ret;
 }

@@ -52,7 +52,7 @@ GameScene::GameScene() : frontend()
     v0.pack_end(status_text, 10);
 
     // Canvas
-    canvas = new Canvas(100, 0, w - 200, h - 400);
+    canvas = new Canvas(0, 0, w, h - 2*tb_h);
     drawer = std::make_unique<PuzzleDrawer>(canvas);
     v0.pack_center(canvas);
 
@@ -177,11 +177,32 @@ void GameScene::init_game()
     fb->waveform_mode = WAVEFORM_MODE_DU;
 
     // resize and center the canvas
-    int w = canvas->w;
-    int h = canvas->h;
-    midend_size(me, &w, &h, /* user_size = */ true);
-    debugf("midend_size(%p, %d, %d, false) => (%d, %d)\n", (void*)me, canvas->w, canvas->h, w, h);
-    canvas->translate((canvas->w - w) / 2, (canvas->h - h) / 2);
+    auto set_border = [=](int border) {
+        int w = canvas->w - border;
+        int h = canvas->h - border;
+        debugf("midend_size(%p, %d, %d, false)", (void*)me, w, h);
+        midend_size(me, &w, &h, /* user_size = */ true);
+        debugf(" => (%d, %d)\n", w, h);
+        debugf("midend_tilesize(%p) => %d / %d = %f \n", (void*)me, midend_tilesize(me), ourgame->preferred_tilesize, (double)midend_tilesize(me) / ourgame->preferred_tilesize);
+        canvas->translate((canvas->w - w) / 2, (canvas->h - h) / 2);
+    };
+    if (config.fullscreen) {
+        set_border(0);
+    } else {
+        // prefer a 100px border unless we go below min_tilesize
+        for (int border = 100; border < 800; border += 100) {
+            set_border(border);
+            int tilesize = midend_tilesize(me);
+            // we went one too far
+            if (tilesize < config.min_tilesize) {
+                set_border(std::max(0, border - 100));
+                break;
+            }
+            // we've gone far enough
+            if (tilesize <= config.max_tilesize)
+                break;
+        }
+    }
 
     midend_redraw(me);
     ui::MainLoop::refresh();
