@@ -3,7 +3,7 @@
 	url = git://git.tartarus.org/simon/puzzles.git
 [submodule "vendor/rmkit"]
 	path = vendor/rmkit
-	url = git@github.com:rmkit-dev/rmkit.git
+	url = https://github.com/rmkit-dev/rmkit.git
 [submodule "vendor/inih"]
 	path = vendor/inih
 	url = https://github.com/benhoyt/inih
