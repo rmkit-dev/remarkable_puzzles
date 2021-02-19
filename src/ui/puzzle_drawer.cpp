@@ -187,19 +187,67 @@ void PuzzleDrawer::draw_update(int x, int y, int w, int h)
     canvas->drawfb()->update_dirty(canvas->drawfb()->dirty_area, x+w, y+h);
 }
 
+
+// == Blitter ==
+
+struct blitter {
+    std::vector<remarkable_color> buffer;
+    int x, y, w, h;
+    blitter(int w, int h) : x(0), y(0), w(w), h(h) {}
+};
+
 blitter * PuzzleDrawer::blitter_new(int w, int h)
 {
-    return NULL;
+    return new blitter(w, h);
 }
 
 void PuzzleDrawer::blitter_free(blitter *bl)
 {
+    if (bl != NULL)
+        delete bl;
+}
+
+void clamp_length(int &pt, int &len, int max_len)
+{
+    // clamp values to an appropriate range
+    if (pt < 0) {
+        len = len + pt;
+        pt = 0;
+    } else if (pt + len > max_len) {
+        len = max_len - pt;
+    }
 }
 
 void PuzzleDrawer::blitter_save(blitter *bl, int x, int y)
 {
+    int w = bl->w;
+    int h = bl->h;
+    // blitter bookkeeping
+    bl->x = x;
+    bl->y = y;
+    bl->buffer.resize(bl->w * bl->h);
+    // do the actual copy
+    auto fb = canvas->drawfb();
+    clamp_length(x, w, fb->width);
+    clamp_length(y, h, fb->height);
+    for (int i = 0; i < h; i++) {
+        auto fb_start = &fb->fbmem[(y+i)*fb->width + x];
+        std::copy(fb_start, fb_start + w, bl->buffer.begin() + i*bl->w);
+    }
 }
 
 void PuzzleDrawer::blitter_load(blitter *bl, int x, int y)
 {
+    int w = bl->w;
+    int h = bl->h;
+    if (x == BLITTER_FROMSAVED) x = bl->x;
+    if (y == BLITTER_FROMSAVED) y = bl->y;
+    // do the actual copy
+    auto fb = canvas->drawfb();
+    clamp_length(x, w, fb->width);
+    clamp_length(y, h, fb->height);
+    for (int i = 0; i < h; i++) {
+        auto bl_start = bl->buffer.begin() + i*bl->w;
+        std::copy(bl_start, bl_start + w, &fb->fbmem[(y+i)*fb->width + x]);
+    }
 }
