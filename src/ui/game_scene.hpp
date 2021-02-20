@@ -73,6 +73,7 @@ public:
 
 protected:
     // Puzzle event handlers
+    void init_input_handlers();
     void handle_puzzle_key(int key_id);
     void handle_puzzle_key(int x, int y, int key_id);
     void handle_canvas_event(input::SynMotionEvent & evt, int key_id);

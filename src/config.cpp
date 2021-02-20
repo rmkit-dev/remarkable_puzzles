@@ -34,6 +34,17 @@ int handler(void* user, const char* section, const char* name, const char* value
             std::cerr << "unexpected key: " << section << "." << name << std::endl;
             return 0;
         }
+    } else if (strcmp(section, "input") == 0) {
+        if (strcmp(name, "touch_threshold") == 0) {
+            p->cfg->touch_threshold = std::atoi(value);
+        } else if (strcmp(name, "long_press") == 0) {
+            p->cfg->use_long_press = strcmp(value, "true") == 0;
+        } else if (strcmp(name, "dragging") == 0) {
+            p->cfg->use_dragging = strcmp(value, "true") == 0;
+        } else {
+            std::cerr << "unexpected key: " << section << "." << name << std::endl;
+            return 0;
+        }
     } else if (strcmp(section, "colors") == 0) {
         if (strcmp(name, "_order") == 0) {
             // colors._order is a space separated list

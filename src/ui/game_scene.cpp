@@ -105,28 +105,7 @@ GameScene::GameScene() : frontend()
         set_params(midend_get_presets(me, NULL)->entries[idx].params);
     };
 
-    // Canvas
-    canvas->gestures.single_click += [=](auto &ev) {
-        handle_canvas_event(ev, LEFT_BUTTON);
-        handle_canvas_event(ev, LEFT_RELEASE);
-    };
-    canvas->gestures.long_press += [=](auto &ev) {
-        handle_canvas_event(ev, RIGHT_BUTTON);
-        // this could turn into a drag event, so don't issue the RELEASE
-        // just yet (RELEASE is handled in the up / leave handler)
-    };
-    canvas->gestures.drag_start += [=](auto &ev) {
-        // we already saw the RIGHT_BUTTON event in long_press
-        if (!ev.is_long_press)
-            handle_canvas_event(ev, LEFT_BUTTON);
-    };
-    canvas->gestures.dragging += [=](auto &ev) {
-        handle_canvas_event(ev, ev.is_long_press ? RIGHT_DRAG : LEFT_DRAG);
-    };
-    canvas->gestures.drag_end += [=](auto &ev) {
-        handle_canvas_event(ev, ev.is_long_press ? RIGHT_RELEASE : LEFT_RELEASE);
-    };
-
+    // Set canvas up / leave handlers only once
     // The midend guarantees that any RELEASE means "the current button", so if
     // we had RIGHT_DOWN before this, these events will be translated to
     // RIGHT_RELEASE.
@@ -147,6 +126,44 @@ GameScene::GameScene() : frontend()
         set_game(ourgame);
     };
 #endif
+}
+
+void GameScene::init_input_handlers()
+{
+    // Touch event handlers
+    canvas->gestures.single_click.clear();
+    canvas->gestures.long_press.clear();
+    canvas->gestures.drag_start.clear();
+    canvas->gestures.dragging.clear();
+    canvas->gestures.drag_end.clear();
+
+    canvas->gestures.single_click += [=](auto &ev) {
+        handle_canvas_event(ev, LEFT_BUTTON);
+        handle_canvas_event(ev, LEFT_RELEASE);
+    };
+    if (config.use_long_press) {
+        canvas->gestures.long_press += [=](auto &ev) {
+            handle_canvas_event(ev, RIGHT_BUTTON);
+            // this could turn into a drag event, so don't issue the RELEASE
+            // just yet (RELEASE is handled in the up / leave handler)
+        };
+    }
+    if (config.use_dragging) {
+        canvas->gestures.drag_start += [=](auto &ev) {
+            // we already saw the RIGHT_BUTTON event in long_press
+            if (!ev.is_long_press)
+                handle_canvas_event(ev, LEFT_BUTTON);
+        };
+        canvas->gestures.dragging += [=](auto &ev) {
+            handle_canvas_event(ev, ev.is_long_press ? RIGHT_DRAG : LEFT_DRAG);
+        };
+        canvas->gestures.drag_end += [=](auto &ev) {
+            handle_canvas_event(ev, ev.is_long_press ? RIGHT_RELEASE : LEFT_RELEASE);
+        };
+    }
+
+    // Threshold settings
+    canvas->gestures.set_touch_threshold(config.touch_threshold);
 }
 
 void GameScene::handle_canvas_event(input::SynMotionEvent & ev, int key_id)
@@ -255,6 +272,7 @@ void GameScene::set_game(const game * a_game)
 {
     save_state();
     init_midend(drawer.get(), a_game);
+    init_input_handlers();
     if (! load_state())
         new_game();
 }
