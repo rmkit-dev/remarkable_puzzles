@@ -112,15 +112,30 @@ GameScene::GameScene() : frontend()
     };
     canvas->gestures.long_press += [=](auto &ev) {
         handle_canvas_event(ev, RIGHT_BUTTON);
-        handle_canvas_event(ev, RIGHT_RELEASE);
+        // this could turn into a drag event, so don't issue the RELEASE
+        // just yet (RELEASE is handled in the up / leave handler)
     };
     canvas->gestures.drag_start += [=](auto &ev) {
-        handle_canvas_event(ev, LEFT_BUTTON);
+        // we already saw the RIGHT_BUTTON event in long_press
+        if (!ev.is_long_press)
+            handle_canvas_event(ev, LEFT_BUTTON);
     };
     canvas->gestures.dragging += [=](auto &ev) {
-        handle_canvas_event(ev, LEFT_DRAG);
+        handle_canvas_event(ev, ev.is_long_press ? RIGHT_DRAG : LEFT_DRAG);
     };
     canvas->gestures.drag_end += [=](auto &ev) {
+        handle_canvas_event(ev, ev.is_long_press ? RIGHT_RELEASE : LEFT_RELEASE);
+    };
+
+    // The midend guarantees that any RELEASE means "the current button", so if
+    // we had RIGHT_DOWN before this, these events will be translated to
+    // RIGHT_RELEASE.
+    // See the large comment at the top of midend_process_key:
+    // https://git.tartarus.org/?p=simon/puzzles.git;a=blob;f=midend.c;h=15636d4cfb0032bd3842feb4b73d2efe17fc9075;hb=HEAD#l1056
+    canvas->mouse.up += [=](auto &ev) {
+        handle_canvas_event(ev, LEFT_RELEASE);
+    };
+    canvas->mouse.leave += [=](auto &ev) {
         handle_canvas_event(ev, LEFT_RELEASE);
     };
 
