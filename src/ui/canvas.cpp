@@ -83,8 +83,8 @@ void Canvas::render()
     // there a way to figure out which area is dirty in that situation?
     dirty.x0 = 0;
     dirty.y0 = 0;
-    dirty.x1 = vfb->width;
-    dirty.y1 = vfb->height;
+    dirty.x1 = vfb->width - trans_x;
+    dirty.y1 = vfb->height - trans_y;
     debugf("======================RENDER (%d, %d) -> (%d, %d)\n",
             dirty.x0, dirty.y0, dirty.x1, dirty.y1);
     copy_fb(vfb, dirty.x0, dirty.y0,
