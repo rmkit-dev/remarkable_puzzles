@@ -8,6 +8,7 @@ extern const game galaxies;
 extern const game inertia;
 extern const game lightup;
 extern const game mines;
+extern const game net;
 extern const game pearl;
 extern const game pegs;
 extern const game samegame;
@@ -25,6 +26,7 @@ static const game * GAME_LIST[] = {
     &inertia,
     &lightup,
     &mines,
+    &net,
     &pearl,
     &pegs,
     &samegame,

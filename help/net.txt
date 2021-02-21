@@ -1,0 +1,9 @@
+Net
+
+Rotate the grid squares so that they all join up into a single connected network with no loops.
+
+Click in a square to rotate it anticlockwise. Long-press to rotate it clockwise.
+
+Squares connected to the middle square are lit up. Aim to light up every square in the grid (not just the endpoint blobs).
+
+When this gets too easy, select a 'wrapping' variant from the Type menu to enable grid lines to run off one edge of the playing area and come back on the opposite edge! 

@@ -1,0 +1,13 @@
+diff --git a/net.c b/net.c
+index 5796e95..851851c 100644
+--- a/net.c
++++ b/net.c
+@@ -65,7 +65,7 @@
+ #define WINDOW_OFFSET 16
+ #endif
+ 
+-#define ROTATE_TIME 0.13F
++#define ROTATE_TIME 0.0F
+ #define FLASH_FRAME 0.07F
+ 
+ enum {
