@@ -46,15 +46,15 @@ GameScene::GameScene() : frontend()
     v0.pack_start(toolbar);
 
     // Status bar
-    auto status_style = ui::Stylesheet().justify_left();
-    status_text = new ui::Text(10, 0, w - 20, 50, "");
+    auto status_style = ui::Stylesheet().justify_left().valign_middle();
+    status_text = new ui::Text(20, 0, w - 40, 80, "");
     status_text->set_style(status_style);
-    v0.pack_end(status_text, 10);
+    v0.pack_end(status_text);
 
     // Canvas
-    canvas = new Canvas(0, 0, w, h - 2*tb_h);
+    canvas = new Canvas(0, 0, w, h - tb_h - status_text->h);
     drawer = std::make_unique<PuzzleDrawer>(canvas);
-    v0.pack_center(canvas);
+    v0.pack_start(canvas);
 
     // Toolbar
     back_btn = new ui::Button(0, 0, 276, tb_h, "< All Games");
