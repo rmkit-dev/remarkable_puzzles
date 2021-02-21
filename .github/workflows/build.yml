@@ -1,0 +1,101 @@
+name: Release build and full source archive
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  source:
+    name: Zip full source with submodules
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install git-archive-all
+
+      - name: Create full archive
+        run: git-archive-all -v puzzles-source.tar.gz
+
+      - name: Upload source artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: puzzles-source
+          path: puzzles-source.tar.gz
+
+  build:
+    name: Release build
+    runs-on: ubuntu-latest
+    container: ghcr.io/toltec-dev/python:latest
+    steps:
+      - name: Install dependencies
+        run: |
+          apt-get update
+          apt-get install git -y
+          pip3 install okp
+
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - name: Build
+        run: make puzzles ARCH=arm BUILD=release
+
+      - name: Gzip artifact
+        run: |
+          mv build/release/puzzles .
+          tar cvzf puzzles.tar.gz puzzles config/ help/ icons/
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: puzzles
+          path: puzzles.tar.gz
+
+  release:
+    name: Create Github release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [source, build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+
+      - name: Create Github release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          draft: true
+
+      - name: Upload source asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: puzzles-source/puzzles-source.tar.gz
+          asset_name: puzzles-source.tar.gz
+          asset_content_type: application/gzip
+
+      - name: Upload build asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: puzzles/puzzles.tar.gz
+          asset_name: puzzles.tar.gz
+          asset_content_type: application/gzip
