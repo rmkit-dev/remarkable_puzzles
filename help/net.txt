@@ -2,7 +2,7 @@ Net
 
 Rotate the grid squares so that they all join up into a single connected network with no loops.
 
-Click in a square to rotate it anticlockwise. Long-press to rotate it clockwise.
+Click in a square to rotate it anticlockwise. Long-press to lock a square once you think it is correct (so you don't accidentally rotate it again); do the same again to unlock it if you change your mind.
 
 Squares connected to the middle square are lit up. Aim to light up every square in the grid (not just the endpoint blobs).
 
