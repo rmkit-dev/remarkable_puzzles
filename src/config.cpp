@@ -20,6 +20,24 @@ struct Parser {
     std::map<std::string, int> color_order;
 };
 
+Config::Button parse_button(const char *value, Config::Button default_button)
+{
+    if (strcmp(value, "false") == 0) {
+        return Config::Button::NONE;
+    } else if (strcmp(value, "true") == 0) {
+        return default_button;
+    } else if (strcmp(value, "left") == 0) {
+        return Config::Button::LEFT;
+    } else if (strcmp(value, "right") == 0) {
+        return Config::Button::RIGHT;
+    } else if (strcmp(value, "middle") == 0) {
+        return Config::Button::MIDDLE;
+    } else {
+        std::cerr << "unexpected button value: " << value << std::endl;
+        return default_button;
+    }
+}
+
 int handler(void* user, const char* section, const char* name, const char* value)
 {
     Parser *p = static_cast<Parser*>(user);
@@ -38,7 +56,7 @@ int handler(void* user, const char* section, const char* name, const char* value
         if (strcmp(name, "touch_threshold") == 0) {
             p->cfg->touch_threshold = std::atoi(value);
         } else if (strcmp(name, "long_press") == 0) {
-            p->cfg->use_long_press = strcmp(value, "true") == 0;
+            p->cfg->long_press_button = parse_button(value, Config::Button::RIGHT);
         } else if (strcmp(name, "dragging") == 0) {
             p->cfg->use_dragging = strcmp(value, "true") == 0;
         } else {

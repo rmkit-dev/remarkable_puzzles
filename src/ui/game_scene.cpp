@@ -137,28 +137,38 @@ void GameScene::init_input_handlers()
     canvas->gestures.dragging.clear();
     canvas->gestures.drag_end.clear();
 
+    int short_down = LEFT_BUTTON;
+    int long_down =
+        config.long_press_button == Config::Button::RIGHT ? RIGHT_BUTTON :
+        config.long_press_button == Config::Button::LEFT ? LEFT_BUTTON :
+        config.long_press_button == Config::Button::MIDDLE ? MIDDLE_BUTTON : 0;
+    int short_drag = short_down + (LEFT_DRAG - LEFT_BUTTON);
+    int long_drag = long_down + (LEFT_DRAG - LEFT_BUTTON);
+    int short_up = short_down + (LEFT_RELEASE - LEFT_BUTTON);
+    int long_up = long_down + (LEFT_RELEASE - LEFT_BUTTON);
+
     canvas->gestures.single_click += [=](auto &ev) {
-        handle_canvas_event(ev, LEFT_BUTTON);
-        handle_canvas_event(ev, LEFT_RELEASE);
+        handle_canvas_event(ev, short_down);
+        handle_canvas_event(ev, short_up);
     };
-    if (config.use_long_press) {
+    if (long_down > 0) {
         canvas->gestures.long_press += [=](auto &ev) {
-            handle_canvas_event(ev, RIGHT_BUTTON);
+            handle_canvas_event(ev, long_down);
             // this could turn into a drag event, so don't issue the RELEASE
             // just yet (RELEASE is handled in the up / leave handler)
         };
     }
     if (config.use_dragging) {
         canvas->gestures.drag_start += [=](auto &ev) {
-            // we already saw the RIGHT_BUTTON event in long_press
+            // we already saw the long_down event in long_press
             if (!ev.is_long_press)
-                handle_canvas_event(ev, LEFT_BUTTON);
+                handle_canvas_event(ev, short_down);
         };
         canvas->gestures.dragging += [=](auto &ev) {
-            handle_canvas_event(ev, ev.is_long_press ? RIGHT_DRAG : LEFT_DRAG);
+            handle_canvas_event(ev, ev.is_long_press ? long_drag : short_drag);
         };
         canvas->gestures.drag_end += [=](auto &ev) {
-            handle_canvas_event(ev, ev.is_long_press ? RIGHT_RELEASE : LEFT_RELEASE);
+            handle_canvas_event(ev, ev.is_long_press ? long_up : short_up);
         };
     }
 

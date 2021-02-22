@@ -12,7 +12,8 @@ struct Config {
     bool fullscreen = false;
 
     // touch events
-    bool use_long_press = true;
+    enum class Button { NONE, LEFT, RIGHT, MIDDLE };
+    Button long_press_button = Button::RIGHT;
     bool use_dragging = true;
     int touch_threshold = 50;
 
