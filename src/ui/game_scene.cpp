@@ -97,8 +97,12 @@ GameScene::GameScene() : frontend()
         handle_puzzle_key(UI_REDO);
     };
     help_btn->mouse.click += [=](auto &ev) {
-        if (! help_dlg)
+        if (! help_dlg) {
             help_dlg = std::make_unique<HelpDialog>(800, 1200);
+            help_dlg->on_hide += [=](auto & _) {
+                canvas->full_refresh = true;
+            };
+        }
         help_dlg->show(ourgame);
     };
     presets_menu->events.selected += [=](int idx) {
@@ -219,13 +223,9 @@ void GameScene::init_game()
     last_status = midend_status(me);
     init_presets_menu(presets_menu, me);
 
-    // Clear the screen
+    // Trigger a full refresh on the next canvas render
     canvas->drawfb()->clear_screen();
-    auto fb = framebuffer::get();
-    fb->clear_screen();
-    fb->waveform_mode = WAVEFORM_MODE_INIT;
-    fb->redraw_screen(true);
-    fb->waveform_mode = WAVEFORM_MODE_DU;
+    canvas->full_refresh = true;
 
     // resize and center the canvas
     auto set_border = [=](int border) {

@@ -24,6 +24,7 @@ class Canvas: public ui::Widget {
 public:
     int trans_x = 0;
     int trans_y = 0;
+    bool full_refresh = false;
 
     Canvas(int x, int y, int w, int h);
     virtual ~Canvas();

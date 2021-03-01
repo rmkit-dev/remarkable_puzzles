@@ -73,8 +73,55 @@ Canvas::~Canvas()
         delete layer;
 }
 
+int shrink_x(framebuffer::FB * fb, const framebuffer::FBRect & rect, int start, int end)
+{
+    int step = start <= end ? 1 : -1;
+    for (int x = start; x != end; x += step)
+        for (int y = rect.y0; y <= rect.y1; y++)
+            if (fb->fbmem[y*fb->width + x] < 0xffff)
+                return x;
+    return end;
+}
+
+int shrink_y(framebuffer::FB * fb, const framebuffer::FBRect & rect, int start, int end)
+{
+    int step = start <= end ? 1 : -1;
+    for (int y = start; y != end; y += step)
+        for (int x = rect.x0; x < rect.x1; x++)
+            if (fb->fbmem[y*fb->width + x] < 0xffff)
+                return y;
+    return end;
+}
+
+void shrink_update_rect(framebuffer::FBRect &rect, framebuffer::FB * fb)
+{
+    rect.x0 = shrink_x(fb, rect, rect.x0, rect.x1);
+    rect.x1 = shrink_x(fb, rect, rect.x1, rect.x0);
+    rect.y0 = shrink_y(fb, rect, rect.y0, rect.y1);
+    rect.y1 = shrink_y(fb, rect, rect.y1, rect.y0);
+}
+
+
 void Canvas::render()
 {
+    if (full_refresh) {
+        full_refresh = false;
+        // Clear ghosting by running a FULL update at the next tick.
+        ui::set_timeout([=]() {
+            // find the minimal area that contains the full game
+            fb->dirty_area.x0 = this->x;
+            fb->dirty_area.x1 = this->x + this->w;
+            fb->dirty_area.y0 = this->y;
+            fb->dirty_area.y1 = this->y + this->h;
+            shrink_update_rect(fb->dirty_area, fb);
+            // run the update
+            fb->dirty = 1;
+            fb->waveform_mode = WAVEFORM_MODE_GC16;
+            fb->update_mode = UPDATE_MODE_FULL;
+            fb->redraw_screen();
+        }, 10);
+    }
+
     // TODO: merge layers
     framebuffer::FB * vfb = drawfb(0);
 
