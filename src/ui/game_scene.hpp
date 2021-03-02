@@ -64,6 +64,7 @@ public:
     bool save_state();
 
     void check_solved();
+    bool wants_full_refresh();
 
     // Puzzle frontend implementation
     void frontend_default_colour(float *output);

@@ -10,6 +10,12 @@
 #include "game_list.hpp"
 #include "ui/msg.hpp"
 
+// Include the midend struct declaration
+extern "C" {
+#define PUZZLE_DECLARATION_ONLY
+#include "vendor/puzzles/midend.patched.c"
+}
+
 constexpr int TIMER_INTERVAL = 100;
 
 void init_presets_menu(ui::TextDropdown * presets_menu, midend * me)
@@ -100,7 +106,8 @@ GameScene::GameScene() : frontend()
         if (! help_dlg) {
             help_dlg = std::make_unique<HelpDialog>(800, 1200);
             help_dlg->on_hide += [=](auto & _) {
-                canvas->full_refresh = true;
+                if (wants_full_refresh())
+                    canvas->full_refresh = true;
             };
         }
         help_dlg->show(ourgame);
@@ -218,6 +225,16 @@ void GameScene::check_solved()
     }, 50);
 }
 
+bool GameScene::wants_full_refresh()
+{
+    if (ourgame == NULL)
+        return false;
+    else if (me->nstates == 1)
+        return config.full_refresh_new;
+    else
+        return config.full_refresh_solving;
+}
+
 void GameScene::init_game()
 {
     last_status = midend_status(me);
@@ -225,7 +242,8 @@ void GameScene::init_game()
 
     // Trigger a full refresh on the next canvas render
     canvas->drawfb()->clear_screen();
-    canvas->full_refresh = true;
+    if (wants_full_refresh())
+        canvas->full_refresh = true;
 
     // resize and center the canvas
     auto set_border = [=](int border) {

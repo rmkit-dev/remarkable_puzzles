@@ -63,6 +63,15 @@ int handler(void* user, const char* section, const char* name, const char* value
             std::cerr << "unexpected key: " << section << "." << name << std::endl;
             return 0;
         }
+    } else if (strcmp(section, "full_refresh") == 0) {
+        if (strcmp(name, "new_puzzle") == 0) {
+            p->cfg->full_refresh_new = strcmp(value, "true") == 0;
+        } else if (strcmp(name, "solving_puzzle") == 0) {
+            p->cfg->full_refresh_solving = strcmp(value, "true") == 0;
+        } else {
+            std::cerr << "unexpected key: " << section << "." << name << std::endl;
+            return 0;
+        }
     } else if (strcmp(section, "colors") == 0) {
         if (strcmp(name, "_order") == 0) {
             // colors._order is a space separated list

@@ -17,6 +17,10 @@ struct Config {
     bool use_dragging = true;
     int touch_threshold = 50;
 
+    // full refresh (to clear ghosting)
+    bool full_refresh_new = false;
+    bool full_refresh_solving = false;
+
     // colors
     std::vector<float> colors; // unset colors are -1
 
