@@ -1,0 +1,19 @@
+diff --git a/midend.c b/midend.c
+index 15636d4..338b443 100644
+--- a/midend.c
++++ b/midend.c
+@@ -94,6 +94,8 @@ struct midend {
+     void *game_id_change_notify_ctx;
+ };
+ 
++#ifndef PUZZLE_DECLARATION_ONLY
++
+ #define ensure(me) do { \
+     if ((me)->nstates >= (me)->statesize) { \
+ 	(me)->statesize = (me)->nstates + 128; \
+@@ -2616,3 +2618,5 @@ const char *midend_print_puzzle(midend *me, document *doc, bool with_soln)
+ 
+     return NULL;
+ }
++
++#endif /* PUZZLE_DECLARATION_ONLY */

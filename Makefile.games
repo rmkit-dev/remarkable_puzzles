@@ -5,7 +5,7 @@ GAME_CFLAGS := -ansi -Ivendor/puzzles/ -Ivendor/puzzles/icons -DCOMBINED \
 	$(BUILD_FLAGS)
 
 # Basic defs from 'Recipe'
-GAME_COMMON = midend drawing misc malloc random version printing
+GAME_COMMON = midend.patched drawing misc malloc random version printing
 # EXTRA sources gathered from '*.R' files:
 # ag 'EXTRA\s*= ' *.R | ag -o ' = .*' | cut -c 4- | tr '[[:upper:]]' '[[:lower:]]' | xargs printf '%s\n' | sort | uniq | paste -s -d ' ' -
 GAME_EXTRA = combi divvy dsf findloop grid latin laydomino loopgen matching penrose sort tdq tree234
@@ -60,8 +60,8 @@ GAME_OBJS = $(addprefix $(BUILD_DIR)/vendor/puzzles/, $(GAME_SRCS:.c=.o))
 # Games with patches
 $(filter %.patched.o,$(GAME_OBJS)): $(BUILD_DIR)/%.patched.o : %.c patches/%.patch
 	mkdir -p $(dir $@)
-	patch -o $(BUILD_DIR)/$< $^
-	$(CC) $(GAME_CFLAGS) -c -o $@ $(BUILD_DIR)/$<
+	patch -o $(BUILD_DIR)/$*.patched.c $^
+	$(CC) $(GAME_CFLAGS) -c -o $@ $(BUILD_DIR)/$*.patched.c
 
 # Games without patches
 $(filter-out %.patched.o,$(GAME_OBJS)): $(BUILD_DIR)/%.o : %.c
