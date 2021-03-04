@@ -3,8 +3,8 @@
 
 #include <rmkit.h>
 
-#include "game_list.hpp"
 #include "puzzles.hpp"
+#include "game_list.hpp"
 #include "ui/chooser_scene.hpp"
 #include "ui/game_scene.hpp"
 
