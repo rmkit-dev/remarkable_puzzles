@@ -20,7 +20,7 @@ protected:
 
     ui::Button * new_game_btn;
     ui::Button * restart_btn;
-    ui::TextDropdown * presets_menu;
+    ui::DropdownMenu * presets_menu;
     ui::Button * back_btn;
     ui::Button * undo_btn;
     ui::Button * redo_btn;

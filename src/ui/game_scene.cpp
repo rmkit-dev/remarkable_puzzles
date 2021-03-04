@@ -18,24 +18,24 @@ extern "C" {
 
 constexpr int TIMER_INTERVAL = 100;
 
-void init_presets_menu(ui::TextDropdown * presets_menu, midend * me)
+void init_presets_menu(ui::DropdownMenu * menu, midend * me)
 {
     // reset the dropdown
-    presets_menu->scene = NULL;
-    presets_menu->options.clear();
-    presets_menu->sections.clear();
+    menu->scene = NULL;
+    menu->options.clear();
+    menu->sections.clear();
     // fill in preset names
-    auto section = presets_menu->add_section("Presets");
     std::vector<std::string> names;
-    auto menu = midend_get_presets(me, NULL);
+    auto menu_cfg = midend_get_presets(me, NULL);
     int preset_id = midend_which_preset(me);
-    for (int i = 0; i < menu->n_entries; i++) {
-        auto entry = menu->entries[i];
-        names.push_back(entry.title);
+    for (int i = 0; i < menu_cfg->n_entries; i++) {
+        auto entry = menu_cfg->entries[i];
         if (entry.id == preset_id)
-            presets_menu->text = entry.title;
+            names.push_back("» " + std::string(entry.title) + " «");
+        else
+            names.push_back("  " + std::string(entry.title) + "  ");
     }
-    section->add_options(names);
+    menu->add_options(names);
 }
 
 GameScene::GameScene() : frontend()
@@ -72,8 +72,7 @@ GameScene::GameScene() : frontend()
     restart_btn = new ui::Button(0, 0, 276, tb_h, "Restart");
     toolbar.pack_start(restart_btn);
 
-    presets_menu = new ui::TextDropdown(0, 0, 276, tb_h, "Presets");
-    presets_menu->dir = ui::DropdownButton::DOWN;
+    presets_menu = new ui::DropdownMenu(0, 0, 276, tb_h, "Presets");
     toolbar.pack_start(presets_menu);
 
     help_btn = new ui::Button(0, 0, 100, tb_h, "?");
