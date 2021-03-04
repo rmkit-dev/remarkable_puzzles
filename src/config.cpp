@@ -6,6 +6,7 @@
 #include <iostream>
 #include <map>
 #include <string>
+#include <sstream>
 
 // INI library (and source since it's only used in this file)
 #define INI_INLINE_COMMENT_PREFIXES ";#"
@@ -75,7 +76,7 @@ int handler(void* user, const char* section, const char* name, const char* value
     } else if (strcmp(section, "colors") == 0) {
         if (strcmp(name, "_order") == 0) {
             // colors._order is a space separated list
-            stringstream ss(value);
+            std::stringstream ss(value);
             std::string label;
             int i = 0;
             while (ss >> label)
