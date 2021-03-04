@@ -5,7 +5,6 @@
 
 #define GAMELIST(X) \
     X(blackbox) \
-    X(blackbox) \
     X(bridges) \
     X(cube) \
     X(galaxies) \
