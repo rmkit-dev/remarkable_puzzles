@@ -4,8 +4,8 @@
 #include <string>
 #include <tuple>
 
-#include "puzzles.hpp"
 #include "game_list.hpp"
+#include "puzzles.hpp"
 #include "paths.hpp"
 
 class ChooserItem : public ui::Widget {

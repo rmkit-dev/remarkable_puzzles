@@ -1,40 +1,35 @@
 #ifndef RMP_GAME_LIST_HPP
 #define RMP_GAME_LIST_HPP
 
-extern const game blackbox;
-extern const game bridges;
-extern const game cube;
-extern const game galaxies;
-extern const game inertia;
-extern const game lightup;
-extern const game mines;
-extern const game net;
-extern const game pearl;
-extern const game pegs;
-extern const game samegame;
-extern const game slant;
-extern const game tents;
-extern const game tracks;
-extern const game unruly;
-extern const game untangle;
+#include "puzzles.hpp"
 
-static const game * GAME_LIST[] = {
-    &blackbox,
-    &bridges,
-    &cube,
-    &galaxies,
-    &inertia,
-    &lightup,
-    &mines,
-    &net,
-    &pearl,
-    &pegs,
-    &samegame,
-    &slant,
-    &tents,
-    &tracks,
-    &unruly,
-    &untangle,
-};
+#define GAMELIST(X) \
+    X(blackbox) \
+    X(blackbox) \
+    X(bridges) \
+    X(cube) \
+    X(galaxies) \
+    X(inertia) \
+    X(lightup) \
+    X(mines) \
+    X(net) \
+    X(pearl) \
+    X(pegs) \
+    X(samegame) \
+    X(slant) \
+    X(tents) \
+    X(tracks) \
+    X(unruly) \
+    X(untangle) \
+
+
+#define GAME_DECL(x) extern const game x;
+#define GAME_REF(x) &x,
+GAMELIST(GAME_DECL)
+static const game *GAME_LIST[] = { GAMELIST(GAME_REF) };
+
+#undef GAMELIST
+#undef GAME_DECL
+#undef GAME_REF
 
 #endif // RMP_GAME_LIST_HPP

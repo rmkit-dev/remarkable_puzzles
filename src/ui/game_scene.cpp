@@ -7,7 +7,6 @@
 #include <rmkit.h>
 
 #include "debug.hpp"
-#include "game_list.hpp"
 #include "ui/msg.hpp"
 
 // Include the midend struct declaration
