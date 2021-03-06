@@ -27,6 +27,9 @@
 #endif
 extern "C" {
 #include "vendor/puzzles/puzzles.h"
+// Also include the midend struct declaration
+#define PUZZLE_DECLARATION_ONLY
+#include "vendor/puzzles/midend.patched.c"
 }
 #if min == NOPE
 #undef min

@@ -7,13 +7,8 @@
 #include <rmkit.h>
 
 #include "debug.hpp"
+#include "puzzles.hpp"
 #include "ui/msg.hpp"
-
-// Include the midend struct declaration
-extern "C" {
-#define PUZZLE_DECLARATION_ONLY
-#include "vendor/puzzles/midend.patched.c"
-}
 
 constexpr int TIMER_INTERVAL = 100;
 
