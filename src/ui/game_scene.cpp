@@ -9,7 +9,6 @@
 #include "debug.hpp"
 #include "puzzles.hpp"
 #include "ui/game_menu.hpp"
-#include "ui/msg.hpp"
 
 constexpr int TIMER_INTERVAL = 100;
 
@@ -256,8 +255,15 @@ void GameScene::check_solved()
     // case, giving this a slight delay seems to help.
     bool win = status > 0;
     ui::set_timeout([=]() {
-        if (!game_over_dlg)
-            game_over_dlg = std::make_unique<SimpleMessageDialog>(500, 200);
+        if (!game_over_dlg) {
+            game_over_dlg = std::make_unique<GameOverDialog>(500, 300);
+            game_over_dlg->new_game_btn->mouse.click += [=](auto &ev) {
+                new_game();
+            };
+            game_over_dlg->menu_btn->mouse.click += [=](auto &ev) {
+                show_menu();
+            };
+        }
         game_over_dlg->show(win ? "You win!" : "Game over");
     }, 50);
 }

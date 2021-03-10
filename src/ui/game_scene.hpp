@@ -11,7 +11,7 @@
 #include "ui/canvas.hpp"
 #include "ui/game_menu.hpp"
 #include "ui/help.hpp"
-#include "ui/msg.hpp"
+#include "ui/game_over.hpp"
 #include "ui/puzzle_drawer.hpp"
 
 class GameScene : public frontend {
@@ -35,7 +35,7 @@ protected:
     void show_menu();
 
     // Game over dialog
-    std::unique_ptr<SimpleMessageDialog> game_over_dlg;
+    std::unique_ptr<GameOverDialog> game_over_dlg;
     int last_status = 0;
 
     // Help dialog
