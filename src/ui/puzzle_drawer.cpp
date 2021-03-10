@@ -2,6 +2,7 @@
 #include "puzzles.hpp"
 #include "ui/canvas.hpp"
 #include "ui/puzzle_drawer.hpp"
+#include "ui/util.hpp"
 
 remarkable_color PuzzleDrawer::rm_color(int idx)
 {
@@ -17,23 +18,10 @@ void PuzzleDrawer::draw_text(int x, int y, int fonttype,
                              int fontsize, int align, int colour,
                              const char *text)
 {
-    // Render text to a bitmap -- taken from Framebuffer::draw_text()
-    auto image = stbtext::get_text_size(text, fontsize);
-    image.buffer = (uint32_t*) malloc(sizeof(uint32_t) * image.w * image.h);
-    memset(image.buffer, WHITE, sizeof(uint32_t) * image.w * image.h);
-    stbtext::render_text(text, image, fontsize);
-
-    // color in the text (render_text renders as black);
+    // Render text to a bitmap (from ui/util)
     remarkable_color c = rm_color(colour);
     remarkable_color alpha = c == WHITE ? BLACK : WHITE;
-    for (int j = 0; j < image.h; j++)
-        for (int i = 0; i < image.w; i++) {
-            int pt = j*image.w+i;
-            if (image.buffer[pt] == BLACK)
-                image.buffer[pt] = c;
-            else if (alpha != WHITE)
-                image.buffer[pt] = alpha;
-        }
+    image_data image = render_colored_text(text, fontsize, rm_color(colour));
 
     // Align the text
     // fontsize should be close to the height (in pixels) of the text.
