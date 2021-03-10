@@ -8,6 +8,7 @@
 
 #include "debug.hpp"
 #include "puzzles.hpp"
+#include "ui/game_menu.hpp"
 #include "ui/msg.hpp"
 
 constexpr int TIMER_INTERVAL = 100;
@@ -69,8 +70,8 @@ GameScene::GameScene() : frontend()
     presets_menu = new ui::DropdownMenu(0, 0, 276, tb_h, "Presets");
     toolbar.pack_start(presets_menu);
 
-    help_btn = new ui::Button(0, 0, 100, tb_h, "?");
-    toolbar.pack_end(help_btn);
+    menu_btn = new GameMenu::Button(0, 0, 100, tb_h, "");
+    toolbar.pack_end(menu_btn);
 
     redo_btn = new ui::Button(0, 0, 100, tb_h, "=>");
     toolbar.pack_end(redo_btn);
@@ -95,15 +96,8 @@ GameScene::GameScene() : frontend()
     redo_btn->mouse.click += [=](auto &ev) {
         handle_puzzle_key(UI_REDO);
     };
-    help_btn->mouse.click += [=](auto &ev) {
-        if (! help_dlg) {
-            help_dlg = std::make_unique<HelpDialog>(800, 1200);
-            help_dlg->on_hide += [=](auto & _) {
-                if (wants_full_refresh())
-                    canvas->full_refresh = true;
-            };
-        }
-        help_dlg->show(ourgame);
+    menu_btn->mouse.click += [=](auto &ev) {
+        show_menu();
     };
     presets_menu->events.selected += [=](int idx) {
         set_params(midend_get_presets(me, NULL)->entries[idx].params);
@@ -130,6 +124,75 @@ GameScene::GameScene() : frontend()
         set_game(ourgame);
     };
 #endif
+}
+
+void GameScene::show_menu()
+{
+    int w, h;
+    std::tie(w, h) = framebuffer::get()->get_display_size();
+    build_menu(w - 400, 0, 400, h)->show();
+}
+
+GameMenu* GameScene::build_menu(int x, int y, int w, int h)
+{
+    if (game_menu)
+        return game_menu.get();
+
+    game_menu = std::make_unique<GameMenu>(me, ourgame, x, y, w, h);
+    game_menu->on_hide += [=](auto & _) {
+        if (wants_full_refresh())
+            canvas->full_refresh = true;
+        // Only destroy the overlay if it's the game menu's scene
+        if (ui::MainLoop::overlay == game_menu->scene)
+            ui::MainLoop::overlay = nullptr;
+        game_menu = nullptr;
+    };
+
+    game_menu->new_game_btn->mouse.click += [=](auto &ev) {
+        new_game();
+    };
+    game_menu->restart_btn->mouse.click += [=](auto &ev) {
+        restart_game();
+    };
+    if (game_menu->solve_btn) {
+        game_menu->solve_btn->mouse.click += [=](auto &ev) {
+            const char *err = midend_solve(me);
+            if (err != NULL) {
+                std::string msg = "Solve error: ";
+                msg += err;
+                status_bar(msg.c_str());
+            }
+        };
+    }
+    game_menu->preset_selected += [=](int idx) {
+        set_params(midend_get_presets(me, NULL)->entries[idx].params);
+    };
+    game_menu->help_btn->mouse.click += [=](auto &ev) {
+        build_help()->show(ourgame);
+    };
+
+    return game_menu.get();
+}
+
+HelpDialog* GameScene::build_help()
+{
+    if (help_dlg)
+        return help_dlg.get();
+
+    help_dlg = std::make_unique<HelpDialog>(800, 1200);
+    help_dlg->on_hide += [=](auto & _) {
+        if (wants_full_refresh())
+            canvas->full_refresh = true;
+        // Only destroy the overlay if it's the dialog's scene
+        if (ui::MainLoop::overlay == help_dlg->scene)
+            ui::MainLoop::overlay = NULL;
+        // There's a circular ref between dialog and scene, so
+        // we can't delete the dialog or we'll segfault when
+        // the scene _also_ tries to delete the dialog
+        // help_dlg = nullptr;
+    };
+
+    return help_dlg.get();
 }
 
 void GameScene::init_input_handlers()

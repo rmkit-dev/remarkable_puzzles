@@ -9,6 +9,7 @@
 
 #include "puzzles.hpp"
 #include "ui/canvas.hpp"
+#include "ui/game_menu.hpp"
 #include "ui/help.hpp"
 #include "ui/msg.hpp"
 #include "ui/puzzle_drawer.hpp"
@@ -24,10 +25,15 @@ protected:
     ui::Button * back_btn;
     ui::Button * undo_btn;
     ui::Button * redo_btn;
-    ui::Button * help_btn;
+    GameMenu::Button * menu_btn;
 
     Canvas * canvas;
     ui::Text * status_text;
+
+    // Menu scene
+    std::unique_ptr<GameMenu> game_menu;
+    GameMenu* build_menu(int x, int y, int w, int h);
+    void show_menu();
 
     // Game over dialog
     std::unique_ptr<SimpleMessageDialog> game_over_dlg;
@@ -35,6 +41,7 @@ protected:
 
     // Help dialog
     std::unique_ptr<HelpDialog> help_dlg;
+    HelpDialog* build_help();
 
     // Puzzle frontend
     std::unique_ptr<PuzzleDrawer> drawer;
