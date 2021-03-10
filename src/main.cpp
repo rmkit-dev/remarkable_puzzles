@@ -23,7 +23,7 @@ public:
         fb->redraw_screen(true);
 
         ui::Style::DEFAULT.font_size = 30;
-        ui::Button::DEFAULT_STYLE += ui::Stylesheet().valign_middle().border_all();
+        ui::Button::DEFAULT_STYLE += ui::Stylesheet().valign_middle();
 
         chooser_scene = std::make_shared<ChooserScene>();
         chooser_scene->game_selected += PLS_DELEGATE(on_game_selected);

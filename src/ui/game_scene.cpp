@@ -13,26 +13,6 @@
 
 constexpr int TIMER_INTERVAL = 100;
 
-void init_presets_menu(ui::DropdownMenu * menu, midend * me)
-{
-    // reset the dropdown
-    menu->scene = NULL;
-    menu->options.clear();
-    menu->sections.clear();
-    // fill in preset names
-    std::vector<std::string> names;
-    auto menu_cfg = midend_get_presets(me, NULL);
-    int preset_id = midend_which_preset(me);
-    for (int i = 0; i < menu_cfg->n_entries; i++) {
-        auto entry = menu_cfg->entries[i];
-        if (entry.id == preset_id)
-            names.push_back("» " + std::string(entry.title) + " «");
-        else
-            names.push_back("  " + std::string(entry.title) + "  ");
-    }
-    menu->add_options(names);
-}
-
 GameScene::GameScene() : frontend()
 {
     scene = ui::make_scene();
@@ -58,26 +38,33 @@ GameScene::GameScene() : frontend()
     v0.pack_start(canvas);
 
     // Toolbar
-    back_btn = new ui::Button(0, 0, 276, tb_h, "< All Games");
+    ui::Stylesheet tool_style = ui::Stylesheet().border_bottom();
+
+    back_btn = new ui::Button(0, 0, 110, tb_h, "<-");
+    back_btn->set_style(tool_style);
     toolbar.pack_start(back_btn);
 
-    new_game_btn = new ui::Button(0, 0, 276, tb_h, "New Game");
-    toolbar.pack_start(new_game_btn);
-
-    restart_btn = new ui::Button(0, 0, 276, tb_h, "Restart");
-    toolbar.pack_start(restart_btn);
-
-    presets_menu = new ui::DropdownMenu(0, 0, 276, tb_h, "Presets");
-    toolbar.pack_start(presets_menu);
-
     menu_btn = new GameMenu::Button(0, 0, 100, tb_h, "");
+    menu_btn->set_style(tool_style);
     toolbar.pack_end(menu_btn);
 
     redo_btn = new ui::Button(0, 0, 100, tb_h, "=>");
+    redo_btn->set_style(tool_style);
     toolbar.pack_end(redo_btn);
 
     undo_btn = new ui::Button(0, 0, 100, tb_h, "<=");
+    undo_btn->set_style(tool_style);
     toolbar.pack_end(undo_btn);
+
+    new_game_btn = new ui::Button(0, 0, 175, tb_h, "New game");
+    new_game_btn->set_style(tool_style);
+    toolbar.pack_end(new_game_btn);
+
+    // whatever's left goes to the title
+    game_title = new ui::Text(0, 0, toolbar.end - toolbar.start, tb_h, "");
+    game_title->set_style(ui::Stylesheet().justify_left().valign_middle()
+                          .border_bottom().font_size(50));
+    toolbar.pack_start(game_title);
 
     // ----- Events -----
     // Toolbar
@@ -87,9 +74,6 @@ GameScene::GameScene() : frontend()
     new_game_btn->mouse.click += [=](auto &ev) {
         new_game();
     };
-    restart_btn->mouse.click += [=](auto &ev) {
-        restart_game();
-    };
     undo_btn->mouse.click += [=](auto &ev) {
         handle_puzzle_key(UI_UNDO);
     };
@@ -98,9 +82,6 @@ GameScene::GameScene() : frontend()
     };
     menu_btn->mouse.click += [=](auto &ev) {
         show_menu();
-    };
-    presets_menu->events.selected += [=](int idx) {
-        set_params(midend_get_presets(me, NULL)->entries[idx].params);
     };
 
     // Set canvas up / leave handlers only once
@@ -294,7 +275,7 @@ bool GameScene::wants_full_refresh()
 void GameScene::init_game()
 {
     last_status = midend_status(me);
-    init_presets_menu(presets_menu, me);
+    game_title->text = std::string(" ") + ourgame->name;
 
     // Trigger a full refresh on the next canvas render
     canvas->drawfb()->clear_screen();

@@ -20,9 +20,8 @@ protected:
     ui::Scene scene;
 
     ui::Button * new_game_btn;
-    ui::Button * restart_btn;
-    ui::DropdownMenu * presets_menu;
     ui::Button * back_btn;
+    ui::Text * game_title;
     ui::Button * undo_btn;
     ui::Button * redo_btn;
     GameMenu::Button * menu_btn;
