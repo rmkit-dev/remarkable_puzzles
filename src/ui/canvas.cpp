@@ -104,7 +104,7 @@ void shrink_update_rect(framebuffer::FBRect &rect, framebuffer::FB * fb)
 
 void Canvas::render()
 {
-    if (full_refresh) {
+    if (full_refresh && !ui::MainLoop::overlay_is_visible) {
         full_refresh = false;
         // Clear ghosting by running a FULL update at the next tick.
         ui::set_timeout([=]() {
