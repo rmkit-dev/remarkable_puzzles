@@ -32,7 +32,6 @@ public:
     // mouse handlers for hover
     void on_mouse_down(input::SynMotionEvent &ev)
     {
-      ev.stop_propagation();
       this->dirty = 1;
     }
 
@@ -57,7 +56,7 @@ public:
         auto prev_dither = fb->dither;
 
         // Background (may be gray, so we need dithering)
-        remarkable_color color = this->mouse_inside ? color::GRAY_10 : WHITE;
+        remarkable_color color = this->mouse_down && this->mouse_inside ? color::GRAY_10 : WHITE;
         fb->dither = framebuffer::DITHER::BAYER_2;
         fb->draw_rect(x, y, w, h, color);
 
