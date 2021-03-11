@@ -39,7 +39,7 @@ GameScene::GameScene() : frontend()
     // Toolbar
     ui::Stylesheet tool_style = ui::Stylesheet().border_bottom();
 
-    back_btn = new ui::Button(0, 0, 110, tb_h, "<-");
+    back_btn = new IconButton(0, 0, 110, tb_h, paths::icon("back"));
     back_btn->set_style(tool_style);
     toolbar.pack_start(back_btn);
 
@@ -47,11 +47,11 @@ GameScene::GameScene() : frontend()
     menu_btn->set_style(tool_style);
     toolbar.pack_end(menu_btn);
 
-    redo_btn = new ui::Button(0, 0, 100, tb_h, "=>");
+    redo_btn = new IconButton(0, 0, 100, tb_h, paths::icon("redo"));
     redo_btn->set_style(tool_style);
     toolbar.pack_end(redo_btn);
 
-    undo_btn = new ui::Button(0, 0, 100, tb_h, "<=");
+    undo_btn = new IconButton(0, 0, 100, tb_h, paths::icon("undo"));
     undo_btn->set_style(tool_style);
     toolbar.pack_end(undo_btn);
 

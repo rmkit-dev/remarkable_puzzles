@@ -35,9 +35,14 @@ inline std::string game_save(const game *g)
     return PUZZLE_DATA + "/save/" + game_basename(g) + ".sav";
 }
 
+inline std::string icon(const std::string & name)
+{
+    return PUZZLE_DATA + "/icons/" + name + ".png";
+}
+
 inline std::string game_icon(const game *g)
 {
-    return PUZZLE_DATA + "/icons/" + game_basename(g) + ".png";
+    return icon(game_basename(g));
 }
 
 } // namespace

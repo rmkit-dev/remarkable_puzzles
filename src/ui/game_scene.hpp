@@ -8,22 +8,26 @@
 #include <rmkit.h>
 
 #include "puzzles.hpp"
+#include "ui/button_mixin.hpp"
 #include "ui/canvas.hpp"
+#include "ui/fs_pixmap.hpp"
 #include "ui/game_menu.hpp"
-#include "ui/help.hpp"
 #include "ui/game_over.hpp"
+#include "ui/help.hpp"
 #include "ui/puzzle_drawer.hpp"
 
 class GameScene : public frontend {
 protected:
+    typedef ButtonMixin<FSPixmap> IconButton;
+
     // Main UI
     ui::Scene scene;
 
     ui::Button * new_game_btn;
-    ui::Button * back_btn;
+    IconButton * back_btn;
     ui::Text * game_title;
-    ui::Button * undo_btn;
-    ui::Button * redo_btn;
+    IconButton * undo_btn;
+    IconButton * redo_btn;
     GameMenu::Button * menu_btn;
 
     Canvas * canvas;
