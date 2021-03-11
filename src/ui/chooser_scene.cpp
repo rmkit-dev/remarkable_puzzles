@@ -7,6 +7,7 @@
 #include "game_list.hpp"
 #include "puzzles.hpp"
 #include "paths.hpp"
+#include "ui/button_mixin.hpp"
 
 class ChooserItem : public ui::Widget {
 protected:
@@ -29,36 +30,9 @@ public:
                 &icon.w, &icon.h, &icon.channels, 4);
     }
 
-    // mouse handlers for hover
-    void on_mouse_down(input::SynMotionEvent &ev)
-    {
-      this->dirty = 1;
-    }
-
-    void on_mouse_up(input::SynMotionEvent &ev)
-    {
-      this->dirty = 1;
-    }
-
-    void on_mouse_leave(input::SynMotionEvent &ev)
-    {
-      this->dirty = 1;
-    }
-
-    void on_mouse_enter(input::SynMotionEvent &ev)
-    {
-      this->dirty = 1;
-    }
-
     void render()
     {
-        printf("RENDER ICON: %s\n", label->text.c_str());
         auto prev_dither = fb->dither;
-
-        // Background (may be gray, so we need dithering)
-        remarkable_color color = this->mouse_down && this->mouse_inside ? color::GRAY_10 : WHITE;
-        fb->dither = framebuffer::DITHER::BAYER_2;
-        fb->draw_rect(x, y, w, h, color);
 
         // Icon (already dithered, so we want DITHER::NONE)
         if (icon.buffer != NULL) {
@@ -86,7 +60,7 @@ ChooserScene::ChooserScene() {
     int x = gap;
     int y = gap;
     for (auto * g : GAME_LIST) {
-        auto item = new ChooserItem(x, y, dx, dy, g);
+        auto item = new ButtonMixin<ChooserItem>(x, y, dx, dy, g);
         scene->add(item);
         item->mouse.click += [=](auto & ev) {
             game_selected(*g);
