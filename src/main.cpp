@@ -14,7 +14,7 @@ public:
     std::shared_ptr<GameScene> game_scene;
     std::shared_ptr<ChooserScene> chooser_scene;
     ui::TimerPtr auto_save_timer;
-    bool wants_auto_save = true;
+    game_state * last_save = NULL;
 
     App()
     {
@@ -47,11 +47,15 @@ public:
             };
         }
         game_scene->set_game(&g);
+        last_save = game_scene->get_game_state();
+        if (auto_save_timer)
+            ui::cancel_timer(auto_save_timer);
         auto_save_timer = ui::set_interval([=]() {
-            if (wants_auto_save && game_scene) {
+            if (game_scene && game_scene->get_game_state() != NULL
+                    && last_save != game_scene->get_game_state()) {
                 game_scene->save_state();
                 std::cerr << "auto save" << std::endl;
-                wants_auto_save = false;
+                last_save = game_scene->get_game_state();
             }
         }, AUTO_SAVE_INTERVAL);
         game_scene->show();
@@ -64,9 +68,6 @@ public:
             ui::MainLoop::main();
             ui::MainLoop::redraw();
             ui::MainLoop::read_input();
-            // only set wants_auto_save if we got any input, since otherwise
-            // the game state couldn't have changed
-            wants_auto_save = wants_auto_save || !ui::MainLoop::in.all_motion_events.empty();
         }
     }
 };

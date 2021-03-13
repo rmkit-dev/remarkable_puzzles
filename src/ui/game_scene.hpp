@@ -72,6 +72,10 @@ public:
     bool save_state(const std::string & filename);
     bool load_state();
     bool save_state();
+    game_state * get_game_state()
+    {
+        return me->statepos > 0 ? me->states[me->statepos-1].state : NULL;
+    }
 
     void check_solved();
     bool wants_full_refresh();
