@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+### Changed
+
+* Auto-save timer is 30 seconds instead of 2 seconds (and will only trigger if
+  the game state has actually changed).
+* Small tweaks to dragging behavior in two games:
+  * Tents: either short or long drag fills squares as grass
+  * Galaxies: either short of long drag adds marker arrows
+
 
 ## [0.2.1] - 2021-03-12
 
