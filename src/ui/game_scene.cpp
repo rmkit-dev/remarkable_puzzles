@@ -184,15 +184,27 @@ void GameScene::init_input_handlers()
     canvas->gestures.dragging.clear();
     canvas->gestures.drag_end.clear();
 
+    auto puzzle_btn = [](Config::Button btn) {
+        return btn == Config::Button::RIGHT ? RIGHT_BUTTON
+             : btn == Config::Button::LEFT ? LEFT_BUTTON
+             : btn == Config::Button::MIDDLE ? MIDDLE_BUTTON
+             : 0;
+    };
+
     int short_down = LEFT_BUTTON;
-    int long_down =
-        config.long_press_button == Config::Button::RIGHT ? RIGHT_BUTTON :
-        config.long_press_button == Config::Button::LEFT ? LEFT_BUTTON :
-        config.long_press_button == Config::Button::MIDDLE ? MIDDLE_BUTTON : 0;
-    int short_drag = short_down + (LEFT_DRAG - LEFT_BUTTON);
-    int long_drag = long_down + (LEFT_DRAG - LEFT_BUTTON);
     int short_up = short_down + (LEFT_RELEASE - LEFT_BUTTON);
+
+    int short_drag_start = puzzle_btn(config.dragging_button);
+    int short_drag = short_drag_start + (LEFT_DRAG - LEFT_BUTTON);
+    int short_drag_end = short_drag_start + (LEFT_RELEASE - LEFT_BUTTON);
+
+    int long_down = puzzle_btn(config.long_press_button);
     int long_up = long_down + (LEFT_RELEASE - LEFT_BUTTON);
+    // long_down is triggered once the press has been down long enough, so it
+    // isn't possible to use a different button for long_drag_start (or thus,
+    // long_drag or long_drag_end).
+    int long_drag = long_down + (LEFT_DRAG - LEFT_BUTTON);
+    int long_drag_end = long_up;
 
     canvas->gestures.single_click += [=](auto &ev) {
         handle_canvas_event(ev, short_down);
@@ -205,17 +217,17 @@ void GameScene::init_input_handlers()
             // just yet (RELEASE is handled in the up / leave handler)
         };
     }
-    if (config.use_dragging) {
+    if (short_drag_start > 0) {
         canvas->gestures.drag_start += [=](auto &ev) {
             // we already saw the long_down event in long_press
             if (!ev.is_long_press)
-                handle_canvas_event(ev, short_down);
+                handle_canvas_event(ev, short_drag_start);
         };
         canvas->gestures.dragging += [=](auto &ev) {
             handle_canvas_event(ev, ev.is_long_press ? long_drag : short_drag);
         };
         canvas->gestures.drag_end += [=](auto &ev) {
-            handle_canvas_event(ev, ev.is_long_press ? long_up : short_up);
+            handle_canvas_event(ev, ev.is_long_press ? long_drag_end : short_drag_end);
         };
     }
 

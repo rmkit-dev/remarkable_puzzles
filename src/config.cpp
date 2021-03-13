@@ -59,7 +59,7 @@ int handler(void* user, const char* section, const char* name, const char* value
         } else if (strcmp(name, "long_press") == 0) {
             p->cfg->long_press_button = parse_button(value, Config::Button::RIGHT);
         } else if (strcmp(name, "dragging") == 0) {
-            p->cfg->use_dragging = strcmp(value, "true") == 0;
+            p->cfg->dragging_button = parse_button(value, Config::Button::LEFT);
         } else {
             std::cerr << "unexpected key: " << section << "." << name << std::endl;
             return 0;

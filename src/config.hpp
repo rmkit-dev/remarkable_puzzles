@@ -14,7 +14,7 @@ struct Config {
     // touch events
     enum class Button { NONE, LEFT, RIGHT, MIDDLE };
     Button long_press_button = Button::RIGHT;
-    bool use_dragging = true;
+    Button dragging_button = Button::LEFT;
     int touch_threshold = 50;
 
     // full refresh (to clear ghosting)
