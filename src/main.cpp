@@ -7,7 +7,7 @@
 #include "ui/chooser_scene.hpp"
 #include "ui/game_scene.hpp"
 
-const int AUTO_SAVE_INTERVAL = 2000;
+const int AUTO_SAVE_INTERVAL = 30000;
 
 class App {
 public:
