@@ -11,8 +11,13 @@ export ARCH ?= arm
 export BUILD ?= debug
 export BUILD_ROOT ?= build
 export BUILD_DIR ?= $(BUILD_ROOT)/$(BUILD)
+export RMP_COMPILE_DATE ?= $(shell date +%Y-%m-%d)
+export RMP_VERSION ?= $(shell git tag --sort v:refname \
+	| tail -n1 \
+	| perl -pe 's/(\d+)$$/($$1 + 1)."-SNAPSHOT"/e')
 
-DOCKER_ENV=-e ARCH -e BUILD -e BUILD_ROOT -e BUILD_DIR
+
+DOCKER_ENV=-e ARCH -e BUILD -e BUILD_ROOT -e BUILD_DIR -e RMP_COMPILE_DATE -e RMP_VERSION
 
 ifeq ($(ARCH),arm)
 	CXX = arm-linux-gnueabihf-g++

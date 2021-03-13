@@ -105,6 +105,12 @@ SimpleMessageDialog * ChooserScene::build_about()
     about_dlg->set_title("About");
     about_dlg->set_body(
             "Simon Tatham's Portable Puzzle Collection\n\n"
+#ifdef RMP_VERSION
+            "Version: " RMP_VERSION "\n\n"
+#endif
+#ifdef RMP_COMPILE_DATE
+            "Compiled: " RMP_COMPILE_DATE "\n\n"
+#endif
             "https://github.com/mrichards42/remarkable_puzzles"
     );
 

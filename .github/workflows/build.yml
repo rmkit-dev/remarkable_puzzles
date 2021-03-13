@@ -50,7 +50,13 @@ jobs:
           submodules: true
 
       - name: Build
-        run: make puzzles ARCH=arm BUILD=release
+        shell: bash
+        run: |
+          if [[ "${GITHUB_REF##*/}" == v* ]]; then
+            make puzzles ARCH=arm BUILD=release RMP_VERSION=${GITHUB_REF##*/}
+          else
+            make puzzles ARCH=arm BUILD=release
+          fi
 
       - name: Gzip artifact
         run: |
