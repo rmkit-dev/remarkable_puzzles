@@ -57,7 +57,9 @@ INCLUDES += -isystem $(BUILD_DIR)/
 CXXFLAGS  = -Wall $(INCLUDES) $(RMKIT_FLAGS) $(BUILD_FLAGS)
 CXXFLAGS += -fdata-sections -ffunction-sections -Wl,--gc-sections
 CXXFLAGS += -D'RMP_COMPILE_DATE="$(RMP_COMPILE_DATE)"'
-CXXFLAGS += -D'RMP_VERSION="$(RMP_VERSION)"'
+ifneq ($(strip $(RMP_VERSION)),)
+	CXXFLAGS += -D'RMP_VERSION="$(RMP_VERSION)"'
+endif
 
 # rmkit has to be built as a monolith, so combine all the sources into one
 MAIN_OBJ = $(BUILD_DIR)/main.o
