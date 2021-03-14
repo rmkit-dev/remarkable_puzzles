@@ -2,9 +2,13 @@
 
 ## [Unreleased]
 
+
+## [0.2.2] - 2021-03-14
+
 ### Added
 
 * Button on the toolbar to swap long and short press actions
+* Brief help on game controls is shown for a few seconds when opening a game
 
 ### Changed
 
@@ -68,7 +72,8 @@ Initial release
 * Puzzles have custom colors and behavior to suit a grayscale touchscreen
 
 
-[Unreleased]: https://github.com/mrichards42/remarkable_puzzles/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/mrichards42/remarkable_puzzles/compare/v0.2.2...HEAD
+[0.2.2]: https://github.com/mrichards42/remarkable_puzzles/releases/tag/v0.2.2
 [0.2.1]: https://github.com/mrichards42/remarkable_puzzles/releases/tag/v0.2.1
 [0.2.0]: https://github.com/mrichards42/remarkable_puzzles/releases/tag/v0.2.0
 [0.1.0]: https://github.com/mrichards42/remarkable_puzzles/releases/tag/v0.1.0
