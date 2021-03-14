@@ -109,10 +109,11 @@ void Canvas::render()
         // Clear ghosting by running a FULL update at the next tick.
         ui::set_timeout([=]() {
             // find the minimal area that contains the full game
-            fb->dirty_area.x0 = this->x;
-            fb->dirty_area.x1 = this->x + this->w;
-            fb->dirty_area.y0 = this->y;
-            fb->dirty_area.y1 = this->y + this->h;
+            // assume any translation is solely done to center the canvas
+            fb->dirty_area.x0 = this->x + trans_x;
+            fb->dirty_area.x1 = this->x + this->w - trans_x;
+            fb->dirty_area.y0 = this->y + trans_y;
+            fb->dirty_area.y1 = this->y + this->h - trans_y;
             shrink_update_rect(fb->dirty_area, fb);
             // run the update
             fb->dirty = 1;
