@@ -32,15 +32,43 @@ public:
       this->dirty = 1;
     }
 
-    void render()
+    void draw_background(remarkable_color color)
     {
-        // Background (may be gray, so we need dithering)
         auto prev_dither = this->fb->dither;
-        remarkable_color color = this->mouse_down && this->mouse_inside ? color::GRAY_10 : WHITE;
         this->fb->dither = framebuffer::DITHER::BAYER_2;
         this->fb->draw_rect(this->x, this->y, this->w, this->h, color);
         this->fb->dither = prev_dither;
+    }
 
+    void render()
+    {
+        draw_background(
+                this->mouse_down && this->mouse_inside ? color::GRAY_10 : WHITE);
+
+        T::render();
+    }
+};
+
+template<typename T>
+class ToggleButtonMixin : public ButtonMixin<T> {
+public:
+    using ButtonMixin<T>::ButtonMixin;
+
+    bool is_toggled = false;
+
+    void on_mouse_click(input::SynMotionEvent &ev)
+    {
+        is_toggled = !is_toggled;
+    }
+
+    void render()
+    {
+        if (this->mouse_down && this->mouse_inside)
+            ButtonMixin<T>::draw_background(color::GRAY_10);
+        else if (is_toggled)
+            ButtonMixin<T>::draw_background(color::GRAY_14);
+        else
+            ButtonMixin<T>::draw_background(WHITE);
         T::render();
     }
 };

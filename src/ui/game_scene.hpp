@@ -19,6 +19,7 @@
 class GameScene : public frontend {
 protected:
     typedef ButtonMixin<FSPixmap> IconButton;
+    typedef ToggleButtonMixin<FSPixmap> ToggleIconButton;
 
     // Main UI
     ui::Scene scene;
@@ -26,6 +27,7 @@ protected:
     ui::Button * new_game_btn;
     IconButton * back_btn;
     ui::Text * game_title;
+    ToggleIconButton * controls_btn;
     IconButton * undo_btn;
     IconButton * redo_btn;
     GameMenu::Button * menu_btn;

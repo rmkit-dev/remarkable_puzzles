@@ -55,6 +55,10 @@ GameScene::GameScene() : frontend()
     undo_btn->set_style(tool_style);
     toolbar.pack_end(undo_btn);
 
+    controls_btn = new ToggleIconButton(0, 0, 100, tb_h, paths::icon("controls"));
+    controls_btn->set_style(tool_style);
+    toolbar.pack_end(controls_btn);
+
     new_game_btn = new ui::Button(0, 0, 175, tb_h, "New game");
     new_game_btn->set_style(tool_style);
     toolbar.pack_end(new_game_btn);
@@ -72,6 +76,10 @@ GameScene::GameScene() : frontend()
     };
     new_game_btn->mouse.click += [=](auto &ev) {
         new_game();
+    };
+    controls_btn->mouse.click += [=](auto &ev) {
+        controls_btn->set_image(paths::icon(
+                    controls_btn->is_toggled ? "controls-swapped" : "controls"));
     };
     undo_btn->mouse.click += [=](auto &ev) {
         handle_puzzle_key(UI_UNDO);
@@ -203,16 +211,21 @@ void GameScene::init_input_handlers()
     // long_down is triggered once the press has been down long enough, so it
     // isn't possible to use a different button for long_drag_start (or thus,
     // long_drag or long_drag_end).
-    int long_drag = long_down + (LEFT_DRAG - LEFT_BUTTON);
-    int long_drag_end = long_up;
+    int long_drag_start = long_down;
+    int long_drag = long_drag_start + (LEFT_DRAG - LEFT_BUTTON);
+    int long_drag_end = long_drag_start + (LEFT_RELEASE - LEFT_BUTTON);
+
+    auto handle_button = [=](auto &ev, int key_normal, int key_swapped) {
+        handle_canvas_event(ev, controls_btn->is_toggled ? key_swapped : key_normal);
+    };
 
     canvas->gestures.single_click += [=](auto &ev) {
-        handle_canvas_event(ev, short_down);
-        handle_canvas_event(ev, short_up);
+        handle_button(ev, short_down, long_down);
+        handle_button(ev, short_up, long_up);
     };
     if (long_down > 0) {
         canvas->gestures.long_press += [=](auto &ev) {
-            handle_canvas_event(ev, long_down);
+            handle_button(ev, long_down, short_down);
             // this could turn into a drag event, so don't issue the RELEASE
             // just yet (RELEASE is handled in the up / leave handler)
         };
@@ -221,13 +234,19 @@ void GameScene::init_input_handlers()
         canvas->gestures.drag_start += [=](auto &ev) {
             // we already saw the long_down event in long_press
             if (!ev.is_long_press)
-                handle_canvas_event(ev, short_drag_start);
+                handle_button(ev, short_drag_start, long_drag_start);
         };
         canvas->gestures.dragging += [=](auto &ev) {
-            handle_canvas_event(ev, ev.is_long_press ? long_drag : short_drag);
+            if (ev.is_long_press)
+                handle_button(ev, long_drag, short_drag);
+            else
+                handle_button(ev, short_drag, long_drag);
         };
         canvas->gestures.drag_end += [=](auto &ev) {
-            handle_canvas_event(ev, ev.is_long_press ? long_drag_end : short_drag_end);
+            if (ev.is_long_press)
+                handle_button(ev, long_drag_end, short_drag_end);
+            else
+                handle_button(ev, short_drag_end, long_drag_end);
         };
     }
 

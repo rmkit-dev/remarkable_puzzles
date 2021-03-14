@@ -13,9 +13,22 @@ public:
     FSPixmap(int x, int y, int w, int h, const std::string & path)
         : ui::Widget(x,y,w,h)
     {
-        image = load_image(path);
+        set_image(path);
     }
 
+    void set_image(const std::string & path)
+    {
+        image = load_image(path);
+        this->dirty = 1;
+    }
+
+    void render()
+    {
+        if (image.buffer != NULL)
+            fb->draw_bitmap(image, x + (w-image.w)/2, y + (h-image.h)/2);
+    }
+
+protected:
     image_data load_image(const std::string & path)
     {
         auto cached = ui::ImageCache::CACHE.find(path);
@@ -26,12 +39,6 @@ public:
         image.channels = 4;
         ui::ImageCache::CACHE[path] = image;
         return image;
-    }
-
-    void render()
-    {
-        if (image.buffer != NULL)
-            fb->draw_bitmap(image, x + (w-image.w)/2, y + (h-image.h)/2);
     }
 };
 
