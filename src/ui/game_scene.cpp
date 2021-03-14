@@ -19,11 +19,11 @@ GameScene::GameScene() : frontend()
     // ----- Layout -----
     int w, h;
     std::tie(w, h) = framebuffer::get()->get_display_size();
-    int tb_h = 100;
-
     auto v0 = ui::VerticalLayout(0, 0, w, h, scene);
-    auto toolbar = ui::HorizontalLayout(0, 0, w, tb_h, scene);
-    v0.pack_start(toolbar);
+
+    // Toolbar
+    build_toolbar();
+    v0.start = game_title->h;
 
     // Status bar
     auto status_style = ui::Stylesheet().justify_left().valign_middle();
@@ -32,42 +32,9 @@ GameScene::GameScene() : frontend()
     v0.pack_end(status_text);
 
     // Canvas
-    canvas = new Canvas(0, 0, w, h - tb_h - status_text->h);
+    canvas = new Canvas(0, 0, w, h - v0.start - status_text->h);
     drawer = std::make_unique<PuzzleDrawer>(canvas);
     v0.pack_start(canvas);
-
-    // Toolbar
-    ui::Stylesheet tool_style = ui::Stylesheet().border_bottom();
-
-    back_btn = new IconButton(0, 0, 110, tb_h, paths::icon("back"));
-    back_btn->set_style(tool_style);
-    toolbar.pack_start(back_btn);
-
-    menu_btn = new GameMenu::Button(0, 0, 100, tb_h, "");
-    menu_btn->set_style(tool_style);
-    toolbar.pack_end(menu_btn);
-
-    redo_btn = new IconButton(0, 0, 100, tb_h, paths::icon("redo"));
-    redo_btn->set_style(tool_style);
-    toolbar.pack_end(redo_btn);
-
-    undo_btn = new IconButton(0, 0, 100, tb_h, paths::icon("undo"));
-    undo_btn->set_style(tool_style);
-    toolbar.pack_end(undo_btn);
-
-    controls_btn = new ToggleIconButton(0, 0, 100, tb_h, paths::icon("controls"));
-    controls_btn->set_style(tool_style);
-    toolbar.pack_end(controls_btn);
-
-    new_game_btn = new ui::Button(0, 0, 175, tb_h, "New game");
-    new_game_btn->set_style(tool_style);
-    toolbar.pack_end(new_game_btn);
-
-    // whatever's left goes to the title
-    game_title = new ui::Text(0, 0, toolbar.end - toolbar.start, tb_h, "");
-    game_title->set_style(ui::Stylesheet().justify_left().valign_middle()
-                          .border_bottom().font_size(50));
-    toolbar.pack_start(game_title);
 
     // ----- Events -----
     // Toolbar
@@ -112,6 +79,63 @@ GameScene::GameScene() : frontend()
         set_game(ourgame);
     };
 #endif
+}
+
+void GameScene::build_toolbar()
+{
+    if (!back_btn) {
+        int tb_h = 100;
+        ui::Stylesheet tool_style = ui::Stylesheet().border_bottom();
+
+        back_btn = new IconButton(0, 0, 110, tb_h, paths::icon("back"));
+        back_btn->set_style(tool_style);
+        scene->add(back_btn);
+
+        menu_btn = new GameMenu::Button(0, 0, 100, tb_h, "");
+        menu_btn->set_style(tool_style);
+        scene->add(menu_btn);
+
+        redo_btn = new IconButton(0, 0, 100, tb_h, paths::icon("redo"));
+        redo_btn->set_style(tool_style);
+        scene->add(redo_btn);
+
+        undo_btn = new IconButton(0, 0, 100, tb_h, paths::icon("undo"));
+        undo_btn->set_style(tool_style);
+        scene->add(undo_btn);
+
+        controls_btn = new ToggleIconButton(0, 0, 100, tb_h, paths::icon("controls"));
+        controls_btn->set_style(tool_style);
+        scene->add(controls_btn);
+
+        new_game_btn = new ui::Button(0, 0, 175, tb_h, "New game");
+        new_game_btn->set_style(tool_style);
+        scene->add(new_game_btn);
+
+        // whatever's left goes to the title
+        game_title = new ui::Text(0, 0, 600, tb_h, "");
+        game_title->set_style(ui::Stylesheet().justify_left().valign_middle()
+                              .border_bottom().font_size(50));
+        scene->add(game_title);
+    }
+
+    // Pack toolbar items
+    back_btn->x = 0;
+    game_title->x = back_btn->x + back_btn->w;
+    // if any of the right side icons have changed visibility, we need to pack
+    // the remaining icons, and recalculat the size of game_title
+    int right = framebuffer::get()->width;
+    auto layout_end = [=, &right](ui::Widget * w) {
+        if (w->visible) {
+            w->x = right - w->w;
+            right = w->x;
+        }
+    };
+    layout_end(menu_btn);
+    layout_end(redo_btn);
+    layout_end(undo_btn);
+    layout_end(controls_btn);
+    layout_end(new_game_btn);
+    game_title->w = right - game_title->x;
 }
 
 void GameScene::show_menu()
@@ -252,6 +276,16 @@ void GameScene::init_input_handlers()
 
     // Threshold settings
     canvas->gestures.set_touch_threshold(config.touch_threshold);
+
+    // Swap controls button
+    controls_btn->is_toggled = false;
+    controls_btn->set_image(paths::icon("controls"));
+    if (long_down > 0 && long_down != short_down)
+        controls_btn->show();
+    else
+        controls_btn->hide();
+    // re-layout the toolbar since we've changed controls_btn's visibility
+    build_toolbar();
 }
 
 void GameScene::handle_canvas_event(input::SynMotionEvent & ev, int key_id)

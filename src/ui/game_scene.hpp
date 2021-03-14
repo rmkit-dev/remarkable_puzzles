@@ -24,13 +24,14 @@ protected:
     // Main UI
     ui::Scene scene;
 
-    ui::Button * new_game_btn;
-    IconButton * back_btn;
-    ui::Text * game_title;
-    ToggleIconButton * controls_btn;
-    IconButton * undo_btn;
-    IconButton * redo_btn;
-    GameMenu::Button * menu_btn;
+    ui::Button * new_game_btn = nullptr;
+    IconButton * back_btn = nullptr;
+    ui::Text * game_title = nullptr;
+    ToggleIconButton * controls_btn = nullptr;
+    IconButton * undo_btn = nullptr;
+    IconButton * redo_btn = nullptr;
+    GameMenu::Button * menu_btn = nullptr;
+    void build_toolbar();
 
     Canvas * canvas;
     ui::Text * status_text;
