@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+* Button on the toolbar to swap long and short press actions
+
 ### Changed
 
 * Auto-save timer is 30 seconds instead of 2 seconds (and will only trigger if
