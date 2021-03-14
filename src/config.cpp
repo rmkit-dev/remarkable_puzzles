@@ -60,6 +60,14 @@ int handler(void* user, const char* section, const char* name, const char* value
             p->cfg->long_press_button = parse_button(value, Config::Button::RIGHT);
         } else if (strcmp(name, "dragging") == 0) {
             p->cfg->dragging_button = parse_button(value, Config::Button::LEFT);
+        } else if (strcmp(name, "click_help") == 0) {
+            p->cfg->click_help = value;
+        } else if (strcmp(name, "dragging_help") == 0) {
+            p->cfg->dragging_help = value;
+        } else if (strcmp(name, "long_press_help") == 0) {
+            p->cfg->long_press_help = value;
+        } else if (strcmp(name, "long_drag_help") == 0) {
+            p->cfg->long_drag_help = value;
         } else {
             std::cerr << "unexpected key: " << section << "." << name << std::endl;
             return 0;

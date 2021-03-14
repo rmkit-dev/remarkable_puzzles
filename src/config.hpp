@@ -1,6 +1,7 @@
 #ifndef RMP_CONFIG_HPP
 #define RMP_CONFIG_HPP
 
+#include <string>
 #include <vector>
 
 struct game;
@@ -16,6 +17,11 @@ struct Config {
     Button long_press_button = Button::RIGHT;
     Button dragging_button = Button::LEFT;
     int touch_threshold = 50;
+
+    std::string click_help;
+    std::string dragging_help;
+    std::string long_press_help;
+    std::string long_drag_help;
 
     // full refresh (to clear ghosting)
     bool full_refresh_new = false;

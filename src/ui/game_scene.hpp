@@ -15,6 +15,7 @@
 #include "ui/game_over.hpp"
 #include "ui/help.hpp"
 #include "ui/puzzle_drawer.hpp"
+#include "ui/toast.hpp"
 
 class GameScene : public frontend {
 protected:
@@ -32,6 +33,9 @@ protected:
     IconButton * redo_btn = nullptr;
     GameMenu::Button * menu_btn = nullptr;
     void build_toolbar();
+
+    Toast * controls_toast = nullptr;
+    void show_controls(int timeout = 2000);
 
     Canvas * canvas;
     ui::Text * status_text;

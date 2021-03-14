@@ -47,6 +47,7 @@ GameScene::GameScene() : frontend()
     controls_btn->mouse.click += [=](auto &ev) {
         controls_btn->set_image(paths::icon(
                     controls_btn->is_toggled ? "controls-swapped" : "controls"));
+        show_controls();
     };
     undo_btn->mouse.click += [=](auto &ev) {
         handle_puzzle_key(UI_UNDO);
@@ -136,6 +137,42 @@ void GameScene::build_toolbar()
     layout_end(controls_btn);
     layout_end(new_game_btn);
     game_title->w = right - game_title->x;
+}
+
+void GameScene::show_controls(int timeout)
+{
+   if (! controls_toast) {
+       int toast_w = 200;
+       int toast_x = controls_btn->x + (controls_btn->w - toast_w) / 2;
+       controls_toast = new Toast(toast_x, controls_btn->h, toast_w, 100);
+       scene->add(controls_toast);
+   }
+
+   std::string text;
+   auto add_ctrl = [&text](const std::string & title, const std::string & value) {
+       if (!value.empty()) {
+           if (!text.empty())
+               text += "    ";
+           text += title + " = " + value;
+       }
+   };
+   if (controls_btn->is_toggled) {
+       add_ctrl("Tap", config.long_press_help);
+       add_ctrl("Hold", config.click_help);
+       // if the controls are swapped, we at least need to see that indicator
+       text = "[Controls swapped]\n" + text;
+   } else {
+       add_ctrl("Tap", config.click_help);
+       add_ctrl("Hold", config.long_press_help);
+       add_ctrl("Drag", config.dragging_help);
+       if (!text.empty())
+           text = "[Controls]\n" + text;
+   }
+
+   if (!text.empty())
+       controls_toast->show(text, timeout);
+   else
+       controls_toast->hide();
 }
 
 void GameScene::show_menu()
@@ -411,6 +448,8 @@ void GameScene::set_game(const game * a_game)
     init_input_handlers();
     if (! load_state())
         new_game();
+    // Show controls for a little longer the first time
+    show_controls(3500);
 }
 
 void GameScene::set_params(game_params * params)
