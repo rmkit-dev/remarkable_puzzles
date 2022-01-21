@@ -60,7 +60,9 @@ INCLUDES  = -I./ -Isrc/ -Ivendor/inih -Ivendor/puzzles
 INCLUDES += -isystem $(BUILD_DIR)/
 
 CXXFLAGS  = -Wall $(INCLUDES) $(RMKIT_FLAGS) $(BUILD_FLAGS)
+ifeq ($(ARCH), kobo)
 CXXFLAGS += -static -static-libstdc++ -static-libgcc
+endif
 CXXFLAGS += -fdata-sections -ffunction-sections -Wl,--gc-sections
 CXXFLAGS += -D'RMP_COMPILE_DATE="$(RMP_COMPILE_DATE)"'
 ifneq ($(strip $(RMP_VERSION)),)
