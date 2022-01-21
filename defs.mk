@@ -7,7 +7,7 @@ MAKEFLAGS += --no-builtin-rules
 .SUFFIXES:
 
 
-export ARCH ?= arm
+export ARCH ?= rm
 export BUILD ?= debug
 export BUILD_ROOT ?= build
 export BUILD_DIR ?= $(BUILD_ROOT)/$(BUILD)
@@ -19,7 +19,11 @@ export RMP_VERSION ?= $(shell git tag --sort v:refname \
 
 DOCKER_ENV=-e ARCH -e BUILD -e BUILD_ROOT -e BUILD_DIR -e RMP_COMPILE_DATE -e RMP_VERSION
 
-ifeq ($(ARCH),arm)
+ifeq ($(ARCH),rm)
+	CXX = arm-linux-gnueabihf-g++
+	CC  = arm-linux-gnueabihf-gcc
+	STB = stb.arm.o
+else ifeq ($(ARCH),kobo)
 	CXX = arm-linux-gnueabihf-g++
 	CC  = arm-linux-gnueabihf-gcc
 	STB = stb.arm.o
