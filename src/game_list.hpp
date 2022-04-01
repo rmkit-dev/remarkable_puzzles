@@ -12,6 +12,7 @@
     X(galaxies) \
     X(inertia) \
     X(lightup) \
+    X(loopy) \
     X(mines) \
     X(net) \
     X(pearl) \
