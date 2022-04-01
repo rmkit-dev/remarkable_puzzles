@@ -3,9 +3,11 @@
 
 #include "puzzles.hpp"
 
+
 #define GAMELIST(X) \
     X(blackbox) \
     X(bridges) \
+    X(dominosa) \
     X(cube) \
     X(galaxies) \
     X(inertia) \
