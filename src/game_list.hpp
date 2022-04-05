@@ -13,11 +13,13 @@
     X(inertia) \
     X(lightup) \
     X(loopy) \
+    X(magnets) \
     X(mines) \
     X(net) \
     X(pearl) \
     X(pegs) \
     X(samegame) \
+    X(signpost) \
     X(slant) \
     X(tents) \
     X(tracks) \

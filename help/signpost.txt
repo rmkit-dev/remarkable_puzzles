@@ -1,0 +1,7 @@
+Signpost
+
+Connect all the squares together into a sequence, so that every square's arrow points towards the square that follows it (though the next square can be any distance away in that direction).
+
+Left-drag from a square to the square that should follow it, or right-drag from a square to the square that should precede it.
+
+Left-drag a square off the grid to break all links to it. Long-press a square off the grid to break all links to it and everything else in its connected chain. 
