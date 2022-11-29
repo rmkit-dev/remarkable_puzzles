@@ -29,13 +29,18 @@ resim: default
 
 
 #### rmkit
-RMKIT_FLAGS = -D"REMARKABLE=1" \
+RMKIT_FLAGS = -D"RMKIT_IMPLEMENTATION" -D'FONT_EMBED_H="${BUILD_DIR}/font_embed.h"'\
 	-pthread -lpthread
+
+ifeq ($(ARCH),kobo)
+	RMKIT_FLAGS+= -D"KOBO=1"
+endif
 
 $(BUILD_DIR)/rmkit.h:
 	cd vendor/rmkit && $(MAKE) rmkit.h
 	mkdir -p $(dir $@)
 	mv vendor/rmkit/src/build/rmkit.h $(BUILD_DIR)
+	cp vendor/rmkit/src/rmkit/font_embed.h $(BUILD_DIR)
 	cp vendor/rmkit/src/build/$(STB) $(BUILD_DIR)
 
 
@@ -55,6 +60,9 @@ INCLUDES  = -I./ -Isrc/ -Ivendor/inih -Ivendor/puzzles
 INCLUDES += -isystem $(BUILD_DIR)/
 
 CXXFLAGS  = -Wall $(INCLUDES) $(RMKIT_FLAGS) $(BUILD_FLAGS)
+ifeq ($(ARCH), kobo)
+CXXFLAGS += -static -static-libstdc++ -static-libgcc
+endif
 CXXFLAGS += -fdata-sections -ffunction-sections -Wl,--gc-sections
 CXXFLAGS += -D'RMP_COMPILE_DATE="$(RMP_COMPILE_DATE)"'
 ifneq ($(strip $(RMP_VERSION)),)
