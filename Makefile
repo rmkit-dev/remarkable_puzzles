@@ -61,7 +61,13 @@ INCLUDES += -isystem $(BUILD_DIR)/
 
 CXXFLAGS  = -Wall $(INCLUDES) $(RMKIT_FLAGS) $(BUILD_FLAGS)
 ifeq ($(ARCH), kobo)
-CXXFLAGS += -static -static-libstdc++ -static-libgcc
+CXXFLAGS += -static -static-libstdc++ -static-libgcc -D"KOBO=1"
+endif
+ifeq ($(ARCH), rm)
+CXXFLAGS += -D"REMARKABLE=1"
+endif
+ifeq ($(ARCH), dev)
+CXXFLAGS += -D"DEV=1"
 endif
 CXXFLAGS += -fdata-sections -ffunction-sections -Wl,--gc-sections
 CXXFLAGS += -D'RMP_COMPILE_DATE="$(RMP_COMPILE_DATE)"'
