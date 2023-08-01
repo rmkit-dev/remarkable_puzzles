@@ -3,6 +3,13 @@
 ## [Unreleased]
 
 
+## [0.2.3] - 2023-08-01
+
+### Changed
+
+* Updated rmkit
+
+
 ## [0.2.2] - 2021-03-14
 
 ### Added
@@ -72,7 +79,8 @@ Initial release
 * Puzzles have custom colors and behavior to suit a grayscale touchscreen
 
 
-[Unreleased]: https://github.com/mrichards42/remarkable_puzzles/compare/v0.2.2...HEAD
+[Unreleased]: https://github.com/mrichards42/remarkable_puzzles/compare/v0.2.3...HEAD
+[0.2.3]: https://github.com/mrichards42/remarkable_puzzles/releases/tag/v0.2.3
 [0.2.2]: https://github.com/mrichards42/remarkable_puzzles/releases/tag/v0.2.2
 [0.2.1]: https://github.com/mrichards42/remarkable_puzzles/releases/tag/v0.2.1
 [0.2.0]: https://github.com/mrichards42/remarkable_puzzles/releases/tag/v0.2.0
