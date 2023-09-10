@@ -192,8 +192,7 @@ GameMenu* GameScene::build_menu(int x, int y, int w, int h)
         if (wants_full_refresh())
             canvas->full_refresh = true;
         // Only destroy the overlay if it's the game menu's scene
-        if (ui::MainLoop::overlay == game_menu->scene)
-            ui::MainLoop::overlay = nullptr;
+        ui::MainLoop::hide_overlay(game_menu->scene);
         game_menu = nullptr;
     };
 
@@ -233,8 +232,7 @@ HelpDialog* GameScene::build_help()
         if (wants_full_refresh())
             canvas->full_refresh = true;
         // Only destroy the overlay if it's the dialog's scene
-        if (ui::MainLoop::overlay == help_dlg->scene)
-            ui::MainLoop::overlay = NULL;
+        ui::MainLoop::hide_overlay(help_dlg->scene);
         // There's a circular ref between dialog and scene, so
         // we can't delete the dialog or we'll segfault when
         // the scene _also_ tries to delete the dialog

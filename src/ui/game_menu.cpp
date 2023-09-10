@@ -54,10 +54,6 @@ public:
                           label.c_str(), style.font_size, WHITE);
     }
 
-    void on_mouse_click(input::SynMotionEvent &ev)
-    {
-        ui::MainLoop::hide_overlay();
-    }
 };
 
 GameMenu::GameMenu(midend * me, const game *g, int x, int y, int w, int h)
@@ -84,8 +80,8 @@ GameMenu::GameMenu(midend * me, const game *g, int x, int y, int w, int h)
             // overlay is hidden. So hide the overlay at the next tick (instead
             // of immediately), after all other events have been handled.
             ui::set_timeout([=]() {
-                if (ui::MainLoop::overlay == scene)
-                    ui::MainLoop::hide_overlay();
+                if (ui::MainLoop::overlay_is_visible(scene))
+                    ui::MainLoop::hide_overlay(scene);
                 else
                     on_hide();
             }, 0);
@@ -94,7 +90,11 @@ GameMenu::GameMenu(midend * me, const game *g, int x, int y, int w, int h)
     };
 
     // Menu
-    layout.pack_start(new HeaderButton(0, 0, w, 100, "Menu"));
+    auto header_btn = new HeaderButton(0, 0, w, 100, "Menu");
+    layout.pack_start(header_btn);
+    header_btn->mouse.click += [=](auto ev) {
+      ui::MainLoop::hide_overlay(scene);
+    };
 
     // Game buttons
     layout.pack_start(new_game_btn = add_button("  New game", 90));
