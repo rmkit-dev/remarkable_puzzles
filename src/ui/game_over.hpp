@@ -20,13 +20,13 @@ public:
         new_game_btn = new ui::Button(0, 0, w/2, 100, "New game");
         new_game_btn->set_style(ui::Stylesheet().border_all());
         new_game_btn->mouse.click += [=](auto &ev) {
-            ui::MainLoop::hide_overlay();
+            ui::MainLoop::hide_overlay(this->scene);
         };
 
         menu_btn = new ui::Button(0, 0, w/2, 100, "Change type");
         menu_btn->set_style(ui::Stylesheet().border_all());
         menu_btn->mouse.click += [=](auto &ev) {
-            ui::MainLoop::hide_overlay();
+            ui::MainLoop::hide_overlay(this->scene);
         };
     }
 
