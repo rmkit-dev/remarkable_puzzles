@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+## [0.2.4] - 2023-12-12
+
+### Fixed
+
+* Github CI
 
 ## [0.2.3] - 2023-08-01
 
@@ -80,6 +85,7 @@ Initial release
 
 
 [Unreleased]: https://github.com/mrichards42/remarkable_puzzles/compare/v0.2.3...HEAD
+[0.2.4]: https://github.com/mrichards42/remarkable_puzzles/releases/tag/v0.2.4
 [0.2.3]: https://github.com/mrichards42/remarkable_puzzles/releases/tag/v0.2.3
 [0.2.2]: https://github.com/mrichards42/remarkable_puzzles/releases/tag/v0.2.2
 [0.2.1]: https://github.com/mrichards42/remarkable_puzzles/releases/tag/v0.2.1
