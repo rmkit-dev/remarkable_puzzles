@@ -37,7 +37,7 @@ jobs:
   build:
     name: Release build
     runs-on: ubuntu-latest
-    container: ghcr.io/toltec-dev/python:2.3.2
+    container: ghcr.io/toltec-dev/python:v2.3.2
     steps:
       - name: Install dependencies
         run: |
