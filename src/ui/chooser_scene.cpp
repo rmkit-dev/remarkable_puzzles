@@ -75,8 +75,8 @@ ChooserScene::ChooserScene() {
 
     // Icons
     int padding = 25;
-    int dx = (w - 2*padding) / 4;
-    int dy = (h - 2*tb_h - 4*padding) / 4;
+    int dx = (w - 2*padding) / 5;
+    int dy = (h - 2*tb_h - 4*padding) / 5;
 
     int x = padding;
     int y = tb_h + padding;
